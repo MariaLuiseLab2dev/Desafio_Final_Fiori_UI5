@@ -1,0 +1,307 @@
+<mvc:View
+  controllerName="finalprojectui5.controller.ViewAtvos"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+>
+  <Page
+    id="idRequisitionsPage"
+    title="{i18n>title}"
+  >
+    <IconTabBar
+      id="idMainIconTabBar"
+      expandable="false"
+      selectedKey="{/selectedTab}"
+      select="onIconTabBar"
+      xmlns:core="sap.ui.core"
+    >
+      <items>
+        <!-- Aba Portal de consulta -->
+        <IconTabFilter
+          id="idPortalDeConsultaIconTabFilter"
+          key="PORTAL"
+          text="Portal de Consulta"
+        >
+          <content>
+            <Panel
+              id="idFiltersPortalPanel"
+              headerText="Filtros"
+              class="sapUiSmallMargin"
+            >
+              <VBox
+                id="idFiltersPortalVBox"
+                renderType="Bare"
+                width="100%"
+              >
+                <HBox
+                  id="idFiltersPortalHBox"
+                  wrap="Wrap"
+                >
+                  <VBox
+                    id="idNumeroPortalVBox"
+                    width="24%"
+                  >
+                    <Label
+                      id="idNmeroDaRequisioLabel"
+                      text="Número da Requisição"
+                    />
+                    <Input
+                      id="idNumeroPortalInput"
+                      value="{/filter/numero}"
+                      placeholder="Ex: 4500012345"
+                    />
+                  </VBox>
+
+                  <VBox
+                    id="idSolicitantePortalVBox"
+                    width="24%"
+                  >
+                    <Label
+                      id="idSolicitantePortalLabel"
+                      text="Solicitante"
+                    />
+                    <Input
+                      id="idSolicitantePortalInput"
+                      value="{/filter/solicitante}"
+                      placeholder="Nome do solicitante"
+                    />
+                  </VBox>
+
+                  <VBox
+                    id="idStatusPortalVBox"
+                    width="24%"
+                  >
+                    <Label
+                      id="idStatusPortalLabel"
+                      text="Status"
+                    />
+                    <Select
+                      id="idStatusPortalSelect"
+                      selectedKey="{/filter/status}"
+                    >
+                      <core:Item
+                        id="idAguardandoAprovaoItem"
+                        key="Aguardando Aprovação"
+                        text="Aguardando Aprovação"
+                      />
+                      <core:Item
+                        id="idAprovadoPortalItem"
+                        key="Aprovado"
+                        text="Aprovado"
+                      />
+                      <core:Item
+                        id="itemEmCotacaoPortal"
+                        key="Em Cotação"
+                        text="Em Cotação"
+                      />
+                      <core:Item
+                        id="itemRejeitadoPortal"
+                        key="Rejeitado"
+                        text="Rejeitado"
+                      />
+                    </Select>
+                  </VBox>
+
+                  <VBox
+                    id="vboxDataPortal"
+                    width="24%"
+                  >
+                    <Label
+                      id="lblDataPortal"
+                      text="Data de Criação"
+                    />
+                    <DatePicker
+                      id="dateCriacaoPortal"
+                      value="{/filter/dataCriacao}"
+                      displayFormat="dd/MM/yyyy"
+                    />
+                  </VBox>
+
+                  
+                </HBox>
+
+                <HBox
+                  id="hboxActionsPortal"
+                  justifyContent="End"
+                  class="sapUiSmallMarginTop"
+                >
+                  <Button
+                    id="btnClearPortal"
+                    text="Limpar"
+                    press="onClearFilters"
+                  />
+                  <Button
+                    id="btnSearchPortal"
+                    text="Iniciar"
+                    type="Emphasized"
+                    press="onSearch"
+                  />
+                </HBox>
+              </VBox>
+            </Panel>
+
+            <Panel id="panelTablePortal" class="sapUiSmallMarginTop">
+  <Table
+    id="reqTablePortal"
+    inset="false"
+    items="{
+      path: 'atvosRc>/BuyerRequests',
+      parameters: { $expand: 'classification,group,material' }
+    }"
+
+    growing="true"
+    growingThreshold="10"
+  >
+    <headerToolbar>
+      <Toolbar id="toolbarTablePortal">
+        <Title id="titleTablePortal" text="{/counts/totalRequisicoesText}" level="H3" />
+      </Toolbar>
+    </headerToolbar>
+
+    <columns>
+      <Column id="colNumeroPortal"><Text id="colTxtNumeroPortal" text="Nº da Requisição" /></Column>
+      <Column id="colClassificacaoPortal"><Text id="colTxtClassificacaoPortal" text="Classificação Contábil" /></Column>
+      <Column id="colGrupoPortal"><Text id="colTxtGrupoPortal" text="Grupo Comprador" /></Column>
+      <Column id="colMaterialPortal"><Text id="colTxtMaterialPortal" text="Material" /></Column>
+      <Column id="colQuantidadePortal"><Text id="colTxtQuantidadePortal" text="Quantidade" /></Column>
+      <Column id="colValorPortal"><Text id="colTxtValorPortal" text="Valor" /></Column>
+      <Column id="colDataPortal"><Text id="colTxtDataPortal" text="Data de Criação" /></Column>
+      <Column id="colStatusPortal"><Text id="colTxtStatusPortal" text="Status" /></Column>
+      <Column id="colDetails"></Column>
+    </columns>
+
+    <items>
+      <ColumnListItem id="cliReqPortal" type="Active">
+        <cells>
+          <!-- número -->
+          <Text id="cellNumeroPortal" text="{atvosRc>request}" />
+
+          <!-- associações -->
+          <Text id="cellClassificacaoPortal" text="{atvosRc>classification/description}" />
+          <Text id="cellGrupoPortal" text="{atvosRc>group/description}" />
+          <Text id="cellMaterialPortal" text="{atvosRc>material/description}" />
+
+          <!-- valores simples -->
+          <Text id="cellQuantidadePortal" text="{atvosRc>quantity}" />
+          <Text id="cellValorPortal" text="{path: 'atvosRc>value', formatter: '.formatCurrency'}" />
+
+          <!-- data -->
+          <Text id="cellDataPortal" text="{path: 'atvosRc>createdAt', formatter: '.formatDate'}" />
+
+          <!-- status -->
+          <ObjectStatus id="cellStatusPortal"
+                        text="{atvosRc>status}"
+                        state="{path: 'atvosRc>status', formatter: '.statusState'}" />
+
+          <!-- ícone de detalhes -->
+         <core:Icon
+            id="idcellDetailsIcon" 
+            src="sap-icon://slim-arrow-right"
+            press="onIconDetailsPress"
+            class="sapUiSmallMarginBegin" />
+
+        
+        </cells>
+      </ColumnListItem>
+    </items>
+  </Table>
+</Panel>
+          </content>
+        </IconTabFilter>
+
+        <!-- Aba Dashboard -->
+        <IconTabFilter
+          id="tabDashboard"
+          key="DASHBOARD"
+          text="Dashboard"
+        >
+          <content>
+            <Panel
+              id="panelDashboard"
+              headerText="Dashboard"
+              expandable="false"
+              class="sapUiSmallMargin"
+            >
+              <VBox
+                id="vboxDashboard"
+                renderType="Bare"
+                width="100%"
+                alignItems="Stretch"
+              >
+                <HBox
+                  id="hboxMetrics"
+                  justifyContent="SpaceBetween"
+                  wrap="Wrap"
+                >
+                  <VBox
+                    id="vboxMetric1"
+                    width="32%"
+                  >
+                    <Panel
+                      id="panelMetric1"
+                      headerText="Total Requisições"
+                      class="sapUiSmallMargin"
+                    >
+                      <Text
+                        id="txtMetric1"
+                        text="{/metrics/totalRequisicoes}"
+                      />
+                    </Panel>
+                  </VBox>
+
+                  <VBox
+                    id="vboxMetric2"
+                    width="32%"
+                  >
+                    <Panel
+                      id="panelMetric2"
+                      headerText="Valor Total"
+                      class="sapUiSmallMargin"
+                    >
+                      <Text
+                        id="txtMetric2"
+                        text="{/metrics/valorTotal}"
+                      />
+                    </Panel>
+                  </VBox>
+
+                  <VBox
+                    id="vboxMetric3"
+                    width="32%"
+                  >
+                    <Panel
+                      id="panelMetric3"
+                      headerText="Aguardando Aprovação"
+                      class="sapUiSmallMargin"
+                    >
+                      <Text
+                        id="txtMetric3"
+                        text="{/metrics/aguardando}"
+                      />
+                    </Panel>
+                  </VBox>
+                </HBox>
+
+                <Panel
+                  id="panelChartPlaceholder"
+                  headerText="Gráficos"
+                  class="sapUiSmallMarginTop"
+                >
+                  <VBox
+                    id="vboxChart"
+                    renderType="Bare"
+                  >
+                    <Text
+                      id="txtChartPlaceholder"
+                      text="Inserir gráficos"
+                    />
+                  </VBox>
+                </Panel>
+              </VBox>
+            </Panel>
+          </content>
+        </IconTabFilter>
+      </items>
+    </IconTabBar>
+  </Page>
+</mvc:View>

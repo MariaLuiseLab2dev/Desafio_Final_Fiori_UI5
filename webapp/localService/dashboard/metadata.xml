@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+        <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+        <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+    </edmx:Reference>
+    <edmx:DataServices>
+        <Schema Namespace="DashboardService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+            <Annotation Term="Core.Links">
+                <Collection>
+                    <Record>
+                        <PropertyValue Property="rel" String="author"/>
+                        <PropertyValue Property="href" String="https://cap.cloud.sap"/>
+                    </Record>
+                </Collection>
+            </Annotation>
+            <EntityContainer Name="EntityContainer">
+                <FunctionImport Name="kpis" Function="DashboardService.kpis"/>
+                <FunctionImport Name="ordersStatus" Function="DashboardService.ordersStatus"/>
+                <FunctionImport Name="productCompare" Function="DashboardService.productCompare"/>
+                <FunctionImport Name="totalPerRegion" Function="DashboardService.totalPerRegion"/>
+                <FunctionImport Name="statusPerBuyerGroup" Function="DashboardService.statusPerBuyerGroup"/>
+            </EntityContainer>
+            <ComplexType Name="return_DashboardService_kpis">
+                <Property Name="totalBuys" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="totalOrders" Type="Edm.Int32"/>
+                <Property Name="totalProducts" Type="Edm.Int32"/>
+                <Property Name="averageLeadTime" Type="Edm.Int32"/>
+            </ComplexType>
+            <ComplexType Name="return_DashboardService_ordersStatus">
+                <Property Name="early" Type="Edm.Int32"/>
+                <Property Name="earlyPercentage" Type="Edm.Int32"/>
+                <Property Name="pending" Type="Edm.Int32"/>
+                <Property Name="pendingPercentage" Type="Edm.Int32"/>
+                <Property Name="onTime" Type="Edm.Int32"/>
+                <Property Name="onTimePercentage" Type="Edm.Int32"/>
+                <Property Name="outTime" Type="Edm.Int32"/>
+                <Property Name="outTimePercentage" Type="Edm.Int32"/>
+            </ComplexType>
+            <ComplexType Name="return_DashboardService_productCompare">
+                <Property Name="percentage1" Type="Edm.Double"/>
+                <Property Name="percentage2" Type="Edm.Double"/>
+            </ComplexType>
+            <ComplexType Name="return_DashboardService_totalPerRegion">
+                <Property Name="name" Type="Edm.String"/>
+                <Property Name="regions" Type="Collection(Edm.Int32)" Nullable="true"/>
+            </ComplexType>
+            <ComplexType Name="return_DashboardService_statusPerBuyerGroup">
+                <Property Name="name" Type="Edm.String"/>
+                <Property Name="value" Type="Edm.Double"/>
+            </ComplexType>
+            <Function Name="kpis" IsBound="false" IsComposable="false">
+                <Parameter Name="month" Type="Edm.Int32"/>
+                <Parameter Name="year" Type="Edm.Int32"/>
+                <ReturnType Type="DashboardService.return_DashboardService_kpis"/>
+            </Function>
+            <Function Name="ordersStatus" IsBound="false" IsComposable="false">
+                <Parameter Name="month" Type="Edm.Int32"/>
+                <Parameter Name="year" Type="Edm.Int32"/>
+                <ReturnType Type="DashboardService.return_DashboardService_ordersStatus"/>
+            </Function>
+            <Function Name="productCompare" IsBound="false" IsComposable="false">
+                <Parameter Name="month" Type="Edm.Int32"/>
+                <Parameter Name="year" Type="Edm.Int32"/>
+                <Parameter Name="material1" Type="Edm.String"/>
+                <Parameter Name="material2" Type="Edm.String"/>
+                <ReturnType Type="DashboardService.return_DashboardService_productCompare"/>
+            </Function>
+            <Function Name="totalPerRegion" IsBound="false" IsComposable="false">
+                <Parameter Name="month" Type="Edm.Int32"/>
+                <Parameter Name="year" Type="Edm.Int32"/>
+                <ReturnType Type="Collection(DashboardService.return_DashboardService_totalPerRegion)" Nullable="true"/>
+            </Function>
+            <Function Name="statusPerBuyerGroup" IsBound="false" IsComposable="false">
+                <Parameter Name="month" Type="Edm.Int32"/>
+                <Parameter Name="year" Type="Edm.Int32"/>
+                <ReturnType Type="Collection(DashboardService.return_DashboardService_statusPerBuyerGroup)" Nullable="true"/>
+            </Function>
+            <Annotations Target="DashboardService.kpis(Edm.Int32,Edm.Int32)/month">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DashboardService.kpis(Edm.Int32,Edm.Int32)/year">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DashboardService.ordersStatus(Edm.Int32,Edm.Int32)/month">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DashboardService.ordersStatus(Edm.Int32,Edm.Int32)/year">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DashboardService.productCompare(Edm.Int32,Edm.Int32,Edm.String,Edm.String)/month">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DashboardService.productCompare(Edm.Int32,Edm.Int32,Edm.String,Edm.String)/year">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DashboardService.productCompare(Edm.Int32,Edm.Int32,Edm.String,Edm.String)/material1">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DashboardService.productCompare(Edm.Int32,Edm.Int32,Edm.String,Edm.String)/material2">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DashboardService.totalPerRegion(Edm.Int32,Edm.Int32)/month">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DashboardService.totalPerRegion(Edm.Int32,Edm.Int32)/year">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DashboardService.statusPerBuyerGroup(Edm.Int32,Edm.Int32)/month">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DashboardService.statusPerBuyerGroup(Edm.Int32,Edm.Int32)/year">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

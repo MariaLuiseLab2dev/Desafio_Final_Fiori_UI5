@@ -1,0 +1,152 @@
+{
+  "_version": "1.86.0",
+  "sap.app": {
+    "id": "finalprojectui5",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.29.0",
+      "toolsId": "48fee5e4-e63d-4933-8bd2-a807fb9ea75f"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/request/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/mainService/metadata.xml",
+          "odataVersion": "4.0"
+        }
+      },
+      "dashboard": {
+        "uri": "/odata/v4/dashboard/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/dashboard/metadata.xml",
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.150.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "finalprojectui5.i18n.i18n"
+        }
+      },
+      "atvosRc": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "dashboard": {
+        "dataSource": "dashboard",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "finalprojectui5.view",
+        "async": true,
+        "viewPath": "finalprojectui5.view",
+        "bypassed": {
+          "target":"TargetNotFound"
+        }
+      },
+      "routes": [
+        {
+          "name": "RouteViewAtvos",
+          "pattern": ":?query:",
+          "target": [
+            "TargetViewAtvos"
+          ]
+        },
+        {
+          "name": "RouteDetails",
+          "pattern": "/details/{requisitionId}",
+          "target": "TargetDetail"
+        }
+      ],
+      "targets": {
+        "TargetViewAtvos": {
+          "id": "ViewAtvos",
+          "name": "ViewAtvos"
+        },
+        "TargetDetail": {
+          "id":"detail",
+          "name": "Details"
+        },
+        "TargetNotFound": {
+          "id":"notFound",
+          "name": "NotFound"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "finalprojectui5.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  }
+}
