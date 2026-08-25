@@ -155,6 +155,8 @@
                                             text="{local>/counts/totalRequisicoesText}"
                                             level="H3"
                                         />
+                                        <ToolbarSpacer id="idToolBarSpacer" />
+                                        <SearchField id="idBuyerRequestsSearchField" placeholder="Buscar..." search=".onBuyerRequestsSearch" width="20rem" liveChange=".onBuyerRequestsLiveChange"></SearchField>
                                     </Toolbar>
                                 </headerToolbar>
 
@@ -213,7 +215,8 @@
                                 <items>
                                     <ColumnListItem
                                         id="idColumnListItem"
-                                        type="Active"
+                                        type="Navigation"
+                                        press="onIconDetailsPress"
                                     >
                                         <cells>
                                             <!-- número -->
@@ -257,14 +260,6 @@
                                                 id="idStatusText"
                                                 text="{path: 'atvosRc>status', formatter: '.statusText'}"
                                             />
-
-                                            <!-- ícone de detalhes -->
-                                            <core:Icon
-                                                id="idcellDetailsIcon"
-                                                src="sap-icon://slim-arrow-right"
-                                                press="onIconDetailsPress"
-                                                class="sapUiSmallMarginBegin"
-                                            />
                                         </cells>
                                     </ColumnListItem>
                                 </items>
@@ -272,7 +267,7 @@
                         </Panel>
                         </VBox>
                     
-                    <VBox id="idDetailsContent" visible="view>/showDetails">
+                    <VBox id="idDetailsContent" visible="{view>/showDetails}">
                         <core:Fragment fragmentName="finalprojectui5.view.fragments.Details" type="XML" />
                     </VBox>
 

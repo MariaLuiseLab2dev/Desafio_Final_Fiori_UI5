@@ -12,6 +12,20 @@
 
         <Title id="idDetalhesTitle" text="Detalhes" class="sapUiSmallMarginTop sapUiSmallMarginBottom" />
 
+        <Panel id="idHistoricoPanel" headerText="Histórico" class="sapUiSmallMarginBottom">
+    <content>
+        <HBox id="idHistoricoHBox" wrap="Wrap" items="{oHistorico>/}">
+            <VBox class="sapUiSmallMarginEnd" alignItems="Center">
+                <core:Icon
+                    src="{= ${oHistorico>status} === 'done' ? 'sap-icon://sys-enter-2' : 'sap-icon://circle-task-2' }"
+                    color="{= ${oHistorico>status} === 'done' ? 'Positive' : 'Neutral' }" />
+                <Text text="{oHistorico>texto}" textAlign="Center" width="8rem" />
+                <Text text="{oHistorico>data}" textAlign="Center" />
+            </VBox>
+        </HBox>
+    </content>
+</Panel>
+
         <!-- Dados da RC -->
         <Panel id="idDetalhesDadosPanel" headerText="Dados da RC" class="sapUiSmallMarginBottom">
             <content>
@@ -47,5 +61,32 @@
                 </HBox>
             </content>
         </Panel>
+
+      <Panel id="idLogPanel">
+    <content>
+        <Table id="idLogTable" items="{oLog>/}">
+            <headerToolbar>
+                <Toolbar id="idLogToolbar">
+                    <Title id="idLogTitle" text="Log de Transporte (5)" level="H3" />
+                    <ToolbarSpacer id="idLogToolbarSpacer" />
+                    <SearchField id="idLogSearchField" width="20rem" search=".onLogSearch" />
+                </Toolbar>
+            </headerToolbar>
+            <columns>
+                <Column><Text text="Data status" /></Column>
+                <Column><Text text="Status" /></Column>
+            </columns>
+            <items>
+                <ColumnListItem>
+                    <cells>
+                        <Text text="{oLog>dataStatus}" />
+                        <Text text="{oLog>status}" />
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+    </content>
+</Panel>
+       
     </VBox>
 </core:FragmentDefinition>

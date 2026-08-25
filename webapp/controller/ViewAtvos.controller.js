@@ -49,7 +49,17 @@ sap.ui.define([
                 statusOptions: []
             });
             this.getView().setModel(oLocal, "local");
+            
+            // --- novo: carrega os mocks uma única vez ---
+            const oHistoricoModel = new JSONModel();
+            oHistoricoModel.loadData(sap.ui.require.toUrl("finalprojectui5/localService/mockdata/historico.json"));
+            this.getView().setModel(oHistoricoModel, "oHistorico");
 
+            const oLogModel = new JSONModel();
+            oLogModel.loadData(sap.ui.require.toUrl("finalprojectui5/localService/mockdata/logTransporte.json"));
+            this.getView().setModel(oLogModel, "oLog");
+            // ---------------------------------------------
+            
             const oTable = this.byId("idBuyerRequestsTable");
             if (oTable) {
                 const oBindingInfo = oTable.getBindingInfo("items") || {};
@@ -123,6 +133,54 @@ sap.ui.define([
                 console.error("_updateCounts erro:", err);
             }
         },
+
+        onBuyerRequestsSearch: function (oEvent) {
+            const sQuery = (oEvent.getParameter("query") || "").trim();
+            const oTable = this.byId("idBuyerRequestsTable");
+            const oBinding = oTable && oTable.getBinding("items");
+            if (!oBinding) return;
+
+            if (!sQuery) {
+                oBinding.filter([]);
+                return;
+            }
+
+            const aFilters = [
+                new Filter("material/description", FilterOperator.Contains, sQuery),
+                new Filter("classification/description", FilterOperator.Contains, sQuery),
+                new Filter("group/description", FilterOperator.Contains, sQuery)
+            ];
+
+            // número da requisição (só se for numérico)
+            if (/^\d+$/.test(sQuery)) {
+                aFilters.push(new Filter("request", FilterOperator.EQ, Number(sQuery)));
+            }
+
+            // status (bate pelo texto exibido, ex: "aprovado")
+            const sStatusKey = Object.keys(STATUS_MAP).find(k =>
+                STATUS_MAP[k].text.toLowerCase().includes(sQuery.toLowerCase())
+            );
+            if (sStatusKey) {
+                aFilters.push(new Filter("status", FilterOperator.EQ, sStatusKey));
+            }
+
+            // data (se o texto for uma data válida dd/mm/aaaa)
+            const m = sQuery.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            if (m) {
+                const sIso = `${m[3]}-${m[2]}-${m[1]}`;
+                aFilters.push(new Filter({
+                    filters: [
+                        new Filter("createdAt", FilterOperator.GE, `${sIso}T00:00:00.000Z`),
+                        new Filter("createdAt", FilterOperator.LT, `${sIso}T23:59:59.999Z`)
+                    ],
+                    and: true
+                }));
+            }
+
+            oBinding.filter(new Filter({ filters: aFilters, and: false }));
+        },
+
+
 
         onBuyerRequestsTableUpdateFinished: function (oEvent) {
             const oTable = oEvent.getSource();
