@@ -134,7 +134,7 @@
         },
         "TargetDetail": {
           "id":"detail",
-          "name": "Details"
+          "name": "fragments.Details"
         },
         "TargetNotFound": {
           "id":"notFound",

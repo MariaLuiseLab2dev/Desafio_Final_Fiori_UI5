@@ -1,0 +1,51 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <VBox id="idDetalhesFragmentVBox">
+        <Breadcrumbs 
+            id="idDetalhesBreadcrumbs"
+            currentLocationText="Detalhes"
+        >
+            <Link id="idPortalDeConsultaDeSaldoDeRCsLink" text="Portal de consulta de saldo de RCs" press=".onBackToListPress" />
+        </Breadcrumbs>
+
+        <Title id="idDetalhesTitle" text="Detalhes" class="sapUiSmallMarginTop sapUiSmallMarginBottom" />
+
+        <!-- Dados da RC -->
+        <Panel id="idDetalhesDadosPanel" headerText="Dados da RC" class="sapUiSmallMarginBottom">
+            <content>
+                <HBox id="idDetalhesDataRowHBox" wrap="Wrap">
+                    <VBox id="idDetalhesReqVBox" class="sapUiMediumMarginEnd">
+                        <Label id="idNDaRequisioLabel" text="Nº da Requisição:" />
+                        <Text id="idRequestDetailsText" text="{oDetails>/request}" />
+                    </VBox>
+                    <VBox id="idDetalhesClassVBox" class="sapUiMediumMarginEnd">
+                        <Label id="idClassificaoContbilLabel" text="Classificação Contábil:" />
+                        <Text id="idDescriptionText" text="{oDetails>/classification/description}" />
+                    </VBox>
+                    <VBox id="idDetalhesGroupVBox" class="sapUiMediumMarginEnd">
+                        <Label id="idGrupoCompradorLabel" text="Grupo Comprador:" />
+                        <Text id="idDescriptionBuyerDetailsText" text="{oDetails>/group/description}" />
+                    </VBox>
+                    <VBox id="idDetalhesMaterialVBox" class="sapUiMediumMarginEnd">
+                        <Label id="idMaterialLabel" text="Material:" />
+                        <Text id="idDescriptionDetailsText" text="{oDetails>/material/description}" />
+                    </VBox>
+                    <VBox id="idDetalhesQtyVBox" class="sapUiMediumMarginEnd">
+                        <Label id="idQuantidadeLabel" text="Quantidade:" />
+                        <Text id="idQuantityDetailsText" text="{oDetails>/quantity}" />
+                    </VBox>
+                    <VBox id="idDetalhesValueVBox" class="sapUiMediumMarginEnd">
+                        <Label id="idValorLabel" text="Valor:" />
+                        <Text id="idValueDetailsText" text="{path: 'oDetails>/value', formatter: '.formatCurrency'}" />
+                    </VBox>
+                    <VBox id="idDetalhesStatusVBox">
+                        <Label id="idStatusLabel" text="Status:" />
+                        <ObjectStatus id="idStatusObjectStatus" text="{path: 'oDetails>/status', formatter: '.statusText'}" state="Information" />
+                    </VBox>
+                </HBox>
+            </content>
+        </Panel>
+    </VBox>
+</core:FragmentDefinition>

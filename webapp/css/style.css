@@ -1,1 +1,14 @@
-/* Enter your custom styles here */
+.statusBadge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    color: #ffffff;
+    min-width: 100px;
+    text-align: center;
+}
+
+.statusApproved { background-color: #28a745 !important; }
+.statusRejected { background-color: #dc3545 !important; }
+.statusWaiting  { background-color: #0d6efd !important; }
+.statusQuotation{ background-color: #fd7e14 !important; }
