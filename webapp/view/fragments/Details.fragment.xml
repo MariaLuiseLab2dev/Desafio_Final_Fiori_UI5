@@ -15,12 +15,13 @@
         <Panel id="idHistoricoPanel" headerText="Histórico" class="sapUiSmallMarginBottom">
     <content>
         <HBox id="idHistoricoHBox" wrap="Wrap" items="{oHistorico>/}">
-            <VBox class="sapUiSmallMarginEnd" alignItems="Center">
+            <VBox  id="idHistoricoVBox" class="sapUiSmallMarginEnd" alignItems="Center">
                 <core:Icon
+                    id="idHistoricoIcon"
                     src="{= ${oHistorico>status} === 'done' ? 'sap-icon://sys-enter-2' : 'sap-icon://circle-task-2' }"
                     color="{= ${oHistorico>status} === 'done' ? 'Positive' : 'Neutral' }" />
-                <Text text="{oHistorico>texto}" textAlign="Center" width="8rem" />
-                <Text text="{oHistorico>data}" textAlign="Center" />
+                <Text id="idHistoricoText" text="{oHistorico>texto}" textAlign="Center" width="8rem" />
+                <Text id="idHistoricoData" text="{oHistorico>data}" textAlign="Center" />
             </VBox>
         </HBox>
     </content>
@@ -73,14 +74,14 @@
                 </Toolbar>
             </headerToolbar>
             <columns>
-                <Column><Text text="Data status" /></Column>
-                <Column><Text text="Status" /></Column>
+                <Column id="idLogDataColumn"><Text id="idLogDataColumnText" text="Data status" /></Column>
+                <Column id="idLogStatusColumn"><Text id="idLogStatusColumnText" text="Status" /></Column>
             </columns>
             <items>
-                <ColumnListItem>
+                <ColumnListItem id="idLogColumnListItem">
                     <cells>
-                        <Text text="{oLog>dataStatus}" />
-                        <Text text="{oLog>status}" />
+                        <Text id="idLogDataText" text="{oLog>dataStatus}" />
+                        <Text id="idLogStatusText" text="{oLog>status}" />
                     </cells>
                 </ColumnListItem>
             </items>
