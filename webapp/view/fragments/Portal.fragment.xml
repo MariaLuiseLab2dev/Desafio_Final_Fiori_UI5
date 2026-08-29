@@ -1,0 +1,252 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <VBox id="idListContent" visible="{view>/showList}">
+        <Panel
+            id="idFiltersPortalPanel"
+            headerText="Filtros"
+            height="100%"
+        >
+                <HBox
+                    id="idFiltersPortalHBox"
+                    alignItems="Start"
+                >
+                    <VBox
+                        id="idNumeroPortalVBox"
+                        width="100%"
+                        class="sapUiSmallMargin"
+                    >
+                        <Label
+                            id="idNmeroDaRequisioLabel"
+                            text="Número da Requisição"
+                        />
+                        <Input
+                            id="idNumeroPortalInput"
+                            value="{local>/filter/numero}"
+                            placeholder="Ex: 4500012345"
+                            change=".onNumeroInputChange"
+                        />
+                    </VBox>
+
+                    <VBox
+                        id="idSolicitantePortalVBox"
+                        width="100%"
+                        class="sapUiSmallMargin"
+                    >
+                        <Label
+                            id="idMaterialPortalLabel"
+                            text="Material"
+                        />
+                        <Input
+                            id="idMaterialPortalInput"
+                            value="{local>/filter/material}"
+                            placeholder="Nome do material"
+
+                        />
+                    </VBox>
+
+                    <VBox
+                        id="idStatusPortalVBox"
+                        width="100%"
+                        class="sapUiSmallMargin"
+                    >
+                        <Label
+                            id="idStatusPortalLabel"
+                            text="Status"
+                        />
+                        <Select
+                            id="idStatusOptionsPortalSelect"
+                            selectedKey="{local>/filter/status}"
+                            width="100%"
+                            items="{local>/statusOptions}"
+                            change=".onStatusOptionsSelectChange"
+                            >
+                            <core:Item id="idTextStatusItem" key="{local>key}" text="{local>text}" />
+                        </Select>
+
+                    </VBox>
+
+                    <VBox
+                        id="idDataCriacaoVBox"
+                        width="100%"
+                        class="sapUiSmallMargin"
+                    >
+                        <Label
+                            id="idDataDeCriaoLabel"
+                            text="Data de Criação"
+                        />
+                        <DatePicker
+                            id="idDataCriacaoDatePicker"
+                            value="{local>/filter/dataCriacao}"
+                            displayFormat="dd/MM/yyyy"
+                            valueFormat="yyyy-MM-dd"
+                            placeholder="01/12/2001"
+                            change=".onDataCriacaoDatePickerChange"
+                        />
+                    </VBox>
+
+                    <HBox
+                        id="idBotoesHBox"
+                        width="100%"
+                        class="sapUiMediumMarginTop"
+                        alignItems="Start"
+                        renderType="Bare"
+                        justifyContent="End"
+                    >
+
+                        <Button
+                        id="idLimparButton"
+                        text="Limpar"
+                        press="onLimparButtonPress"
+                        width="50%"
+                        />
+                        <Button
+                            id="idIniciarButton"
+                            text="Iniciar"
+                            type="Emphasized"
+                            press="onIniciarButtonPress"
+                            class="sapUiSmallMarginBegin"
+                            width="50%"
+                        />
+                    </HBox>
+            </HBox>
+        </Panel>
+
+        <Panel
+            id="idPanel"
+            class="sapUiSmallMarginTop"
+        >
+            <Table
+                id="idBuyerRequestsTable"
+                items="{
+                path: 'atvosRc>/BuyerRequests',
+                parameters: { $expand: 'classification,group,material' }
+                }"
+                growing="true"
+                growingThreshold="10"
+                updateFinished=".onBuyerRequestsTableUpdateFinished"
+            >
+                <headerToolbar>
+                    <Toolbar id="idToolbar">
+                        <Title
+                            id="idTotalRequisicoesTextTitle"
+                            text="{local>/counts/totalRequisicoesText}"
+                            level="H3"
+                        />
+                        <ToolbarSpacer id="idToolBarSpacer" />
+                        <SearchField id="idBuyerRequestsSearchField" placeholder="Buscar..." search=".onBuyerRequestsSearch" width="20rem" liveChange=".onBuyerRequestsLiveChange"></SearchField>
+                    </Toolbar>
+                </headerToolbar>
+
+                <columns>
+                    <Column id="idReqColumn">
+                        <Text
+                            id="idNDaRequisioText"
+                            text="Nº da Requisição"
+                        />
+                    </Column>
+                    <Column id="idClassColumn">
+                        <Text
+                            id="idClassificaoContbilText"
+                            text="Classificação Contábil"
+                        />
+                    </Column>
+                    <Column id="idGrupoCompradorColumn">
+                        <Text
+                            id="idGrupoCompradorText"
+                            text="Grupo Comprador"
+                        />
+                    </Column>
+                    <Column id="idMaterialColumn">
+                        <Text
+                            id="idMaterialText"
+                            text="Material"
+                        />
+                    </Column>
+                    <Column id="idQuantidadeColumn">
+                        <Text
+                            id="idQuantidadeText"
+                            text="Quantidade"
+                        />
+                    </Column>
+                    <Column id="idValorColumn">
+                        <Text
+                            id="idValorText"
+                            text="Valor"
+                        />
+                    </Column>
+                    <Column id="idDataDeCriaoColumn">
+                        <Text
+                            id="idDataDeCriaoText"
+                            text="Data de Criação"
+                        />
+                    </Column>
+                    <Column id="idStatusColumn">
+                        <Text
+                            id="idStatussText"
+                            text="Status"
+                        />
+                    </Column>
+                    <Column id="idDetailsColumn" />
+                </columns>
+
+                <items>
+                    <ColumnListItem
+                        id="idColumnListItem"
+                        type="Navigation"
+                        press="onIconDetailsPress"
+                    >
+                        <cells>
+                            <!-- número -->
+                            <Text
+                                id="idRequestText"
+                                text="{path: 'atvosRc>request', formatter: '.formatRequestNumber'}"
+                            />
+
+                            <!-- associações -->
+                            <Text
+                                id="idDescriptionClassText"
+                                text="{atvosRc>classification/description}"
+                            />
+                            <Text
+                                id="idDescriptionGroupText"
+                                text="{atvosRc>group/description}"
+                            />
+                            <Text
+                                id="idDescriptionMaterialText"
+                                text="{atvosRc>material/description}"
+                            />
+
+                            <!-- valores simples -->
+                            <Text
+                                id="idQuantityText"
+                                text="{atvosRc>quantity}"
+                            />
+                            <Text
+                                id="idValueText"
+                                text="{path: 'atvosRc>value', formatter: '.formatCurrency'}"
+                            />
+
+                            <!-- data -->
+                            <Text
+                                id="idCreatedAtText"
+                                text="{path: 'atvosRc>createdAt', formatter: '.formatDate'}"
+                            />
+
+                            <!-- status -->
+                            <Text
+                                id="idStatusText"
+                                text="{path: 'atvosRc>status', formatter: '.statusText'}"
+                            />
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </Panel>
+    </VBox>
+
+    <VBox id="idDetailsContent" visible="{view>/showDetails}">
+        <core:Fragment fragmentName="finalprojectui5.view.fragments.Details" type="XML" />
+    </VBox>
+</core:FragmentDefinition>

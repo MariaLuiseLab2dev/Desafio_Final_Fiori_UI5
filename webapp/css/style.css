@@ -12,3 +12,77 @@
 .statusRejected { background-color: #dc3545 !important; }
 .statusWaiting  { background-color: #0d6efd !important; }
 .statusQuotation{ background-color: #fd7e14 !important; }
+
+.dashboardKpiCard {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.dashboardKpiIcon {
+    color: #0a2f5c;
+    margin-right: 6px;
+    font-size: 1rem;
+}
+
+.dashboardKpiLabel {
+    color: #0a2f5c;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.dashboardKpiValue {
+    color: #e8720c;
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: block;
+    margin-top: 4px;
+}
+
+.dashboardGaugeLabel {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #0a2f5c;
+}
+
+.dashboardGaugePercent {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #0a2f5c;
+    margin-bottom: 6px;
+}
+
+.dashboardGaugeWrap {
+    position: relative;
+    width: 100%;
+}
+
+.dashboardGaugeWrap .sapSuiteRMCVerticalAlignmentContainer {
+    justify-content: center !important;
+}
+
+.dashboardGaugeWrap > .sapMFlexItem {
+    position: static !important;
+}
+
+.sapSuiteRMCPath {
+    stroke-width: 14px !important;
+}
+
+.dashboardGaugeWrap .sapSuiteRMCInsideLabel {
+    visibility: hidden;
+}
+
+.dashboardGaugeCenterText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max-content !important;
+    max-width: none !important;
+    font-weight: 700;
+    color: #0a2f5c;
+    pointer-events: none;
+    text-align: center !important;
+}
