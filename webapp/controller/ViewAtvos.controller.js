@@ -28,9 +28,7 @@ sap.ui.define([
             try {
                 await Promise.all([
                     this._updateCounts(),
-                    this._loadStatusOptions(),
-                    this._loadMonthOptions(),
-                    this._loadMaterialOptions()
+                    this._loadStatusOptions()
                 ]);
 
                 const oSelect = this.byId("idStatusOptionsPortalSelect");
@@ -63,24 +61,6 @@ sap.ui.define([
             oLogModel.loadData(sap.ui.require.toUrl("finalprojectui5/localService/mockdata/logTransporte.json"));
             this.getView().setModel(oLogModel, "oLog");
             // ---------------------------------------------
-
-            // modelo do Dashboard
-            const oDashboardData = new JSONModel({
-                filter: { period: "" },
-                monthOptions: [],
-                materialOptions: [],
-                kpis: { totalBuys: 0, totalOrders: 0, totalProducts: 0, averageLeadTime: 0 },
-                ordersStatus: {
-                    early: 0, earlyPercentage: 0, earlyChart: [],
-                    pending: 0, pendingPercentage: 0, pendingChart: [],
-                    onTime: 0, onTimePercentage: 0, onTimeChart: [],
-                    outTime: 0, outTimePercentage: 0, outTimeChart: []
-                },
-                productCompare: { material1: "", material2: "", percentage1: 0, percentage2: 0, chartData: [] },
-                totalPerRegion: { chartData: [] },
-                statusPerBuyerGroup: { chartData: [] }
-            });
-            this.getView().setModel(oDashboardData, "dashboardData");
 
             const oTable = this.byId("idBuyerRequestsTable");
             if (oTable) {
@@ -135,161 +115,6 @@ sap.ui.define([
                     { key: "REJECTED", text: "Rejeitado" }
                 ]);
             }
-        },
-
-        // ===== Dashboard =====
-
-        _loadMonthOptions: function () {
-            const oDashboard = this.getView().getModel("dashboardData");
-            if (!oDashboard) return;
-            const aMonthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-
-            const aOptions = [];
-            const iYear = 2025;
-            // 12 meses de 2025, de dezembro pra janeiro
-            for (let iMonth = 12; iMonth >= 1; iMonth--) {
-                aOptions.push({
-                    key: `${iYear}-${String(iMonth).padStart(2, "0")}`,
-                    text: `${aMonthNames[iMonth - 1]}/${iYear}`,
-                    month: iMonth,
-                    year: iYear
-                });
-            }
-            oDashboard.setProperty("/monthOptions", aOptions);
-        },
-
-        _loadMaterialOptions: async function () {
-            const oDashboard = this.getView().getModel("dashboardData");
-            if (!oDashboard) return;
-            try {
-                const res = await fetch("/odata/v4/request/Materials");
-                if (!res.ok) throw new Error("HTTP " + res.status);
-                const json = await res.json();
-                const aOptions = (json.value || []).map(m => ({ key: m.ID, text: m.description }));
-                oDashboard.setProperty("/materialOptions", aOptions);
-            } catch (err) {
-                console.error("_loadMaterialOptions:", err);
-                oDashboard.setProperty("/materialOptions", []);
-            }
-        },
-
-        _buildDashboardQuery: function () {
-            const oDashboard = this.getView().getModel("dashboardData");
-            const sKey = oDashboard.getProperty("/filter/period");
-            const aOptions = oDashboard.getProperty("/monthOptions") || [];
-            const oSelected = aOptions.find(o => o.key === sKey);
-            if (!oSelected) return "";
-            return `month=${oSelected.month},year=${oSelected.year}`;
-        },
-
-        _loadDashboardKpis: async function (sQuery) {
-            const oDashboard = this.getView().getModel("dashboardData");
-            try {
-                const res = await fetch(`/odata/v4/dashboard/kpis(${sQuery})`);
-                if (!res.ok) throw new Error("HTTP " + res.status);
-                const data = await res.json();
-                oDashboard.setProperty("/kpis", data);
-            } catch (err) {
-                console.error("_loadDashboardKpis:", err);
-            }
-        },
-
-        _loadOrdersStatus: async function (sQuery) {
-            const oDashboard = this.getView().getModel("dashboardData");
-            try {
-                const res = await fetch(`/odata/v4/dashboard/ordersStatus(${sQuery})`);
-                if (!res.ok) throw new Error("HTTP " + res.status);
-                const data = await res.json();
-                data.earlyChart = [{ label: "Entrega Antecipada", value: data.early }];
-                data.pendingChart = [{ label: "Pendente", value: data.pending }];
-                data.onTimeChart = [{ label: "Entrega no Prazo", value: data.onTime }];
-                data.outTimeChart = [{ label: "Entrega Fora do Prazo", value: data.outTime }];
-                oDashboard.setProperty("/ordersStatus", data);
-            } catch (err) {
-                console.error("_loadOrdersStatus:", err);
-            }
-        },
-
-        _loadProductCompare: async function (sQuery) {
-            const oDashboard = this.getView().getModel("dashboardData");
-            const sM1 = oDashboard.getProperty("/productCompare/material1");
-            const sM2 = oDashboard.getProperty("/productCompare/material2");
-            if (!sM1 || !sM2) return;
-            try {
-                const sUrl = `/odata/v4/dashboard/productCompare(${sQuery},material1='${encodeURIComponent(sM1)}',material2='${encodeURIComponent(sM2)}')`;
-                const res = await fetch(sUrl);
-                if (!res.ok) throw new Error("HTTP " + res.status);
-                const data = await res.json();
-                const aOptions = oDashboard.getProperty("/materialOptions") || [];
-                const oM1 = aOptions.find(o => o.key === sM1);
-                const oM2 = aOptions.find(o => o.key === sM2);
-                data.chartData = [
-                    { label: oM1 ? oM1.text : "Produto 1", value: data.percentage1 },
-                    { label: oM2 ? oM2.text : "Produto 2", value: data.percentage2 }
-                ];
-                oDashboard.setProperty("/productCompare", Object.assign({ material1: sM1, material2: sM2 }, data));
-            } catch (err) {
-                console.error("_loadProductCompare:", err);
-            }
-        },
-
-        _loadTotalPerRegion: async function (sQuery) {
-            const oDashboard = this.getView().getModel("dashboardData");
-            try {
-                const res = await fetch(`/odata/v4/dashboard/totalPerRegion(${sQuery})`);
-                if (!res.ok) throw new Error("HTTP " + res.status);
-                const json = await res.json();
-                const aRaw = json.value || [];
-                // Ordem das regiões no array não é documentada pelo backend;
-                // assumindo ordem alfabética: Centro-Oeste, Nordeste, Norte, Sudeste, Sul.
-                const aChart = aRaw.map(o => ({
-                    name: o.name,
-                    centroOeste: o.regions[0],
-                    nordeste: o.regions[1],
-                    norte: o.regions[2],
-                    sudeste: o.regions[3],
-                    sul: o.regions[4]
-                }));
-                oDashboard.setProperty("/totalPerRegion/chartData", aChart);
-            } catch (err) {
-                console.error("_loadTotalPerRegion:", err);
-            }
-        },
-
-        _loadStatusPerBuyerGroup: async function (sQuery) {
-            const oDashboard = this.getView().getModel("dashboardData");
-            try {
-                const res = await fetch(`/odata/v4/dashboard/statusPerBuyerGroup(${sQuery})`);
-                if (!res.ok) throw new Error("HTTP " + res.status);
-                const json = await res.json();
-                oDashboard.setProperty("/statusPerBuyerGroup/chartData", json.value || []);
-            } catch (err) {
-                console.error("_loadStatusPerBuyerGroup:", err);
-            }
-        },
-
-        onDashboardIniciarButtonPress: async function () {
-            const oVBox = this.byId("idDashboardVBox");
-            if (oVBox) oVBox.setBusy(true);
-            try {
-                const sQuery = this._buildDashboardQuery();
-                await Promise.all([
-                    this._loadDashboardKpis(sQuery),
-                    this._loadOrdersStatus(sQuery),
-                    this._loadProductCompare(sQuery),
-                    this._loadTotalPerRegion(sQuery),
-                    this._loadStatusPerBuyerGroup(sQuery)
-                ]);
-            } catch (err) {
-                console.error("onDashboardIniciarButtonPress:", err);
-            } finally {
-                if (oVBox) oVBox.setBusy(false);
-            }
-        },
-
-        onProdutoCompareSelectChange: function () {
-            this._loadProductCompare(this._buildDashboardQuery());
         },
 
         _updateCounts: async function () {
@@ -394,24 +219,6 @@ sap.ui.define([
             const number = Number(String(value).replace(/,/g, ""));
             if (isNaN(number)) return String(value);
             return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(number);
-        },
-
-        formatCompactCurrency: function (value) {
-            if (value == null) return "R$ 0,00";
-            return new Intl.NumberFormat("pt-BR", {
-                style: "currency", currency: "BRL",
-                notation: "compact", maximumFractionDigits: 1
-            }).format(value);
-        },
-
-        formatCompactNumber: function (value) {
-            if (value == null) return "0";
-            return new Intl.NumberFormat("pt-BR").format(value);
-        },
-
-        formatMinutes: function (value) {
-            if (value == null) return "0 min";
-            return `${value} min`;
         },
 
         formatDate: function (sIso) {
