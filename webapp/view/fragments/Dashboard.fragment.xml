@@ -1,0 +1,50 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+<VBox id="idDashboardFragmentVBox">
+    <Breadcrumbs 
+        id="idDashboardBreadcrumbs"
+        currentLocationText="Dashboard"
+    >
+    </Breadcrumbs>
+
+    <Title id="idDashboardTitle" text="Controle de Compras" class="sapUiSmallMarginTop sapUiSmallMarginBottom" />
+
+    <Panel id="idDashboardFiltrosPanel" headerText="Filtros" class="sapUiSmallMarginBottom">
+        <content>
+           
+        </content>
+    </Panel>
+
+    <HBox id="idDashboardContentHBox" wrap="Wrap">
+        <Panel id="idDashboardTotalGeralComprasPanel" headerText="Total Geral Compras" class="sapUiSmallMarginBottom">
+        <content>
+           
+        </content>
+        </Panel>
+
+        <Panel id="idDashboardTotalGeralPedidosPanel" headerText="Total Geral Pedidos" class="sapUiSmallMarginBottom">
+            <content>
+
+            </content>
+        </Panel>
+
+        <Panel id="idDashboardTotalGeralProdutosPanel" headerText="Total Geral Produtos" class="sapUiSmallMarginBottom">
+            <content>
+
+            </content>
+        </Panel>
+
+        <Panel id="idDashboardMediaGeralAtendimentoPanel" headerText="Média Geral Atendimento" class="sapUiSmallMarginBottom">
+            <content>
+
+            </content>
+        </Panel>
+
+    </HBox>
+
+    
+</VBox>
+
+</core:FragmentDefinition>

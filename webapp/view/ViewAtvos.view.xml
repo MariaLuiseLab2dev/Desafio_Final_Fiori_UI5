@@ -12,7 +12,6 @@
             id="idMainIconTabBar"
             expandable="false"
             selectedKey="{/selectedTab}"
-            
             xmlns:core="sap.ui.core"
         >
             <items>
@@ -39,6 +38,5 @@
                 </IconTabFilter>
             </items>
         </IconTabBar>
-        
     </Page>
 </mvc:View>
