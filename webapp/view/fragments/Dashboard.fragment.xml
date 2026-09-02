@@ -13,36 +13,47 @@
 
     <Panel id="idDashboardFiltrosPanel" headerText="Filtros" class="sapUiSmallMarginBottom">
         <content>
-           
+           <HBox id="HBoxFiltros" class="sapUiSmallMargin">
+            <VBox id="idReferenceMonthVBox" class="sapUiMediumMarginEnd">
+                <Text id="idReferenceMonthText" text="Mês de Referência"></Text>
+                <Select id="idReferenceMonthSelect" width="12rem"></Select>
+            </VBox>
+            
+            <Button id="idDshboardIniciarButton" text="Iniciar" class="sapUiSmallMarginTop"></Button>
+           </HBox>
         </content>
     </Panel>
 
-    <HBox id="idDashboardContentHBox" wrap="Wrap">
-        <Panel id="idDashboardTotalGeralComprasPanel" headerText="Total Geral Compras" class="sapUiSmallMarginBottom">
-        <content>
-           
-        </content>
-        </Panel>
-
-        <Panel id="idDashboardTotalGeralPedidosPanel" headerText="Total Geral Pedidos" class="sapUiSmallMarginBottom">
-            <content>
-
-            </content>
-        </Panel>
-
-        <Panel id="idDashboardTotalGeralProdutosPanel" headerText="Total Geral Produtos" class="sapUiSmallMarginBottom">
-            <content>
-
-            </content>
-        </Panel>
-
-        <Panel id="idDashboardMediaGeralAtendimentoPanel" headerText="Média Geral Atendimento" class="sapUiSmallMarginBottom">
-            <content>
-
-            </content>
-        </Panel>
-
-    </HBox>
+   <HBox id="idKpiHBox" justifyContent="SpaceBetween" wrap="Wrap" class="sapUiSmallMargin">
+            <VBox id="idKpiTotalComprasVBox" width="24%" class="dashboardKpiCard">
+                <HBox id="idKpiTotalComprasHBox" alignItems="Center">
+                    <core:Icon id="idKpiTotalComprasIcon" src="sap-icon://money-bills" class="dashboardKpiIcon" />
+                    <Text id="idKpiTotalComprasLabel" text="Total Geral Compras" class="dashboardKpiLabel" />
+                </HBox>
+                <Text id="idKpiTotalComprasText" text="{path: 'dashboardData>/kpis/totalBuys', formatter: '.formatCompactCurrency'}" class="dashboardKpiValue" />
+            </VBox>
+            <VBox id="idKpiTotalPedidosVBox" width="24%" class="dashboardKpiCard">
+                <HBox id="idKpiTotalPedidosHBox" alignItems="Center">
+                    <core:Icon id="idKpiTotalPedidosIcon" src="sap-icon://sales-order" class="dashboardKpiIcon" />
+                    <Text id="idKpiTotalPedidosLabel" text="Total Geral Pedidos" class="dashboardKpiLabel" />
+                </HBox>
+                <Text id="idKpiTotalPedidosText" text="{path: 'dashboardData>/kpis/totalOrders', formatter: '.formatCompactNumber'}" class="dashboardKpiValue" />
+            </VBox>
+            <VBox id="idKpiTotalProdutosVBox" width="24%" class="dashboardKpiCard">
+                <HBox id="idKpiTotalProdutosHBox" alignItems="Center">
+                    <core:Icon id="idKpiTotalProdutosIcon" src="sap-icon://product" class="dashboardKpiIcon" />
+                    <Text id="idKpiTotalProdutosLabel" text="Total Geral Produtos" class="dashboardKpiLabel" />
+                </HBox>
+                <Text id="idKpiTotalProdutosText" text="{path: 'dashboardData>/kpis/totalProducts', formatter: '.formatCompactNumber'}" class="dashboardKpiValue" />
+            </VBox>
+            <VBox id="idKpiMediaTempoVBox" width="24%" class="dashboardKpiCard">
+                <HBox id="idKpiMediaTempoHBox" alignItems="Center">
+                    <core:Icon id="idKpiMediaTempoIcon" src="sap-icon://history" class="dashboardKpiIcon" />
+                    <Text id="idKpiMediaTempoLabel" text="Média Tempo Geral Atendimento" class="dashboardKpiLabel" />
+                </HBox>
+                <Text id="idKpiMediaTempoText" text="{path: 'dashboardData>/kpis/averageLeadTime', formatter: '.formatMinutes'}" class="dashboardKpiValue" />
+            </VBox>
+        </HBox>
 
     
 </VBox>

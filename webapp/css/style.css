@@ -12,3 +12,9 @@
 .statusRejected { background-color: #dc3545 !important; }
 .statusWaiting  { background-color: #0d6efd !important; }
 .statusQuotation{ background-color: #fd7e14 !important; }
+.dashboardKpiCard {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
