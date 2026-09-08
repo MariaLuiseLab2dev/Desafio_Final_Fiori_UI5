@@ -58,7 +58,8 @@
       "minUI5Version": "1.150.0",
       "libs": {
         "sap.m": {},
-        "sap.ui.core": {}
+        "sap.ui.core": {},
+        "sap.suite.ui.microchart": {}
       }
     },
     "contentDensities": {
@@ -108,9 +109,8 @@
         "viewType": "XML",
         "path": "finalprojectui5.view",
         "async": true,
-        "viewPath": "finalprojectui5.view",
         "bypassed": {
-          "target":"TargetNotFound"
+          "target": "TargetNotFound"
         }
       },
       "routes": [

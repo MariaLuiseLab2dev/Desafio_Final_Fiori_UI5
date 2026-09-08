@@ -105,7 +105,7 @@
                             id="idIniciarButton"
                             text="Iniciar"
                             type="Emphasized"
-                            press="onIniciarButtonPress"
+                            press="onIniciarPortalPress"
                             class="sapUiSmallMarginBegin"
                             width="50%"
                         />

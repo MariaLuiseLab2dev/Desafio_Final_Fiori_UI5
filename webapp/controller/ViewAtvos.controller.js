@@ -7,9 +7,9 @@ sap.ui.define([
     "sap/ui/core/Item",
     "finalprojectui5/controller/helpers"
 ], (Controller,
-	Filter,
-	FilterOperator,
-	JSONModel,
+    Filter,
+    FilterOperator,
+    JSONModel,
     Fragment,
     Item,
     Helpers) => {
@@ -28,7 +28,8 @@ sap.ui.define([
             try {
                 await Promise.all([
                     this._updateCounts(),
-                    this._loadStatusOptions()
+                    this._loadStatusOptions(),
+                    this._loadAvailableMonths()
                 ]);
 
                 const oSelect = this.byId("idStatusOptionsPortalSelect");
@@ -51,7 +52,7 @@ sap.ui.define([
                 statusOptions: []
             });
             this.getView().setModel(oLocal, "local");
-            
+
             // --- novo: carrega os mocks uma única vez ---
             const oHistoricoModel = new JSONModel();
             oHistoricoModel.loadData(sap.ui.require.toUrl("finalprojectui5/localService/mockdata/historico.json"));
@@ -68,6 +69,14 @@ sap.ui.define([
                 this._oItemTemplate = oBindingInfo.template;
                 this._sOriginalModelName = oBindingInfo.model || undefined;
             }
+
+            // carregar o modelo dashhboardData com dados iniciais
+            const oDashboardModel = new JSONModel({
+                monthOptions: [],
+                filter: { period: "" },
+                ordersStatus: { early: 0, earlyPercentage: 0, pending: 0, pendingPercentage: 0, onTime: 0, onTimePercentage: 0, outTime: 0, outTimePercentage: 0 }
+            });
+            this.getView().setModel(oDashboardModel, "dashboardData");
 
             // chama a lógica assíncrona sem "await" no onInit (evita retorno de Promise)
             this._loadInitialData();
@@ -182,8 +191,6 @@ sap.ui.define([
             oBinding.filter(new Filter({ filters: aFilters, and: false }));
         },
 
-
-
         onBuyerRequestsTableUpdateFinished: function (oEvent) {
             const oTable = oEvent.getSource();
             const aItems = oTable.getItems();
@@ -274,7 +281,7 @@ sap.ui.define([
             }
         },
 
-        onIniciarButtonPress: async function () {
+        onIniciarPortalPress: async function () {
             const oView = this.getView();
             const oLocal = oView.getModel("local");
             if (!oLocal) return;
@@ -367,36 +374,147 @@ sap.ui.define([
         },
 
         // ===== Navegação lista <-> detalhes (SEM NavContainer, usa visible toggle) =====
-onIconDetailsPress: async function (oEvent) {
-    const oContext = oEvent.getSource().getBindingContext("atvosRc");
-    const sRequisitionId = oContext && oContext.getProperty("request");
-    if (!sRequisitionId) return;
+        onIconDetailsPress: async function (oEvent) {
+            const oContext = oEvent.getSource().getBindingContext("atvosRc");
+            const sRequisitionId = oContext && oContext.getProperty("request");
+            if (!sRequisitionId) return;
 
-    const oViewModel = this.getView().getModel("view");
-    const oListContent = this.byId("idListContent");
-    if (oListContent) oListContent.setBusy(true);
+            const oViewModel = this.getView().getModel("view");
+            const oListContent = this.byId("idListContent");
+            if (oListContent) oListContent.setBusy(true);
 
-    try {
-        const sUrl = `/odata/v4/request/BuyerRequests(${sRequisitionId})?$expand=material,classification,group`;
-        const res = await fetch(sUrl);
-        if (!res.ok) throw new Error("Erro ao buscar detalhes: " + res.status);
-        const oData = await res.json();
-        console.log("Detalhes recebidos:", oData);
-        this.getView().setModel(new JSONModel(oData), "oDetails");
-        oViewModel.setProperty("/showList", false);
-        oViewModel.setProperty("/showDetails", true);
-    } catch (err) {
-        console.error("Erro ao carregar detalhes:", err);
-    } finally {
-        if (oListContent) oListContent.setBusy(false);
-    }
-},
+            try {
+                const sUrl = `/odata/v4/request/BuyerRequests(${sRequisitionId})?$expand=material,classification,group`;
+                const res = await fetch(sUrl);
+                if (!res.ok) throw new Error("Erro ao buscar detalhes: " + res.status);
+                const oData = await res.json();
+                console.log("Detalhes recebidos:", oData);
+                this.getView().setModel(new JSONModel(oData), "oDetails");
+                oViewModel.setProperty("/showList", false);
+                oViewModel.setProperty("/showDetails", true);
+            } catch (err) {
+                console.error("Erro ao carregar detalhes:", err);
+            } finally {
+                if (oListContent) oListContent.setBusy(false);
+            }
+        },
 
-onBackToListPress: function () {
-    const oViewModel = this.getView().getModel("view");
-    oViewModel.setProperty("/showList", true);
-    oViewModel.setProperty("/showDetails", false);
-}
+        onBackToListPress: function () {
+            const oViewModel = this.getView().getModel("view");
+            oViewModel.setProperty("/showList", true);
+            oViewModel.setProperty("/showDetails", false);
+        },
+
+        _loadAvailableMonths: async function () {
+            const oDashboardModel = this.getView().getModel("dashboardData");
+            if (!oDashboardModel) {
+                console.error("loadAvailableMonths: modelo 'dashboardData' não encontrado");
+                return;
+            }
+
+            const aMonthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            const iYear = 2025;
+
+            const aMonthOptions = aMonthNames.map((sName, i) => {
+                const iMonth = i + 1; // índice do array começa em 0, mês começa em 1
+                return {
+                    key: `${iYear}-${String(iMonth).padStart(2, "0")}`,
+                    text: `${sName}/${iYear}`,
+                    month: iMonth,
+                    year: iYear
+                };
+            });
+
+            oDashboardModel.setProperty("/monthOptions", aMonthOptions);
+        },
+
+        _loadOrdersStatus: async function (oSelectedMonth) {
+            const oDashboardModel = this.getView().getModel("dashboardData");
+
+            if (!oDashboardModel) {
+                console.error("onIniciarDashboardPress: modelo 'dashboardData' não encontrado");
+                return;
+            }
+
+            if (!oSelectedMonth) {
+                console.error("Mês selecionado não encontrado nas opções:", oSelectedMonth);
+                return;
+            }
+
+            try {
+                const sUrl = `/odata/v4/dashboard/ordersStatus(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`;
+                const res = await fetch(sUrl);
+                if (!res.ok) throw new Error("Erro ao buscar dados do dashboard: " + res.status);
+                const oData = await res.json();
+                console.log("Dados do dashboard recebidos:", oData);
+
+                oDashboardModel.setProperty("/ordersStatus", {
+                    early: oData.early || 0,
+                    earlyPercentage: oData.earlyPercentage || 0,
+                    pending: oData.pending || 0,
+                    pendingPercentage: oData.pendingPercentage || 0,
+                    onTime: oData.onTime || 0,
+                    onTimePercentage: oData.onTimePercentage || 0,
+                    outTime: oData.outTime || 0,
+                    outTimePercentage: oData.outTimePercentage || 0
+                });
+            } catch (err) {
+                console.error("Erro ao buscar dados do dashboard:", err);
+            }
+        },
+
+        _loadDashboardKpis: async function (oSelectedMonth) {
+            const oDashboardModel = this.getView().getModel("dashboardData");
+            if (!oDashboardModel) {
+                console.error("onIniciarDashboardPress: modelo 'dashboardData' não encontrado");
+                return;
+            }
+
+            try {
+                const sUrl = `/odata/v4/dashboard/kpis(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`;
+                const res = await fetch(sUrl);
+                if (!res.ok) throw new Error("Erro ao buscar KPIs do dashboard: " + res.status);
+                const oData = await res.json();
+                console.log("KPIs do dashboard recebidos:", oData);
+                oDashboardModel.setProperty("/kpis", {
+                    totalBuys: oData.totalBuys || 0,
+                    totalOrders: oData.totalOrders || 0,
+                    totalProducts: oData.totalProducts || 0,
+                    averageLeadTime: oData.averageLeadTime || 0
+                });
+            } catch (err) {
+                console.error("Erro ao buscar KPIs do dashboard:", err);
+            }
+        },
+
+        onIniciarDashboardPress: async function () {
+            const oDashboardModel = this.getView().getModel("dashboardData");
+
+            if (!oDashboardModel) {
+                console.error("onIniciarDashboardPress: modelo 'dashboardData' não encontrado");
+                return;
+            }
+
+            const sSelectedPeriod = oDashboardModel.getProperty("/filter/period");
+            console.log("Período selecionado:", sSelectedPeriod);
+
+            if (!sSelectedPeriod) {
+                console.warn("Nenhum período selecionado para o dashboard.");
+                return;
+            }
+
+            const oSelectedMonth = oDashboardModel.getProperty("/monthOptions").find(o => o.key === sSelectedPeriod);
+            console.log("Mês selecionado:", oSelectedMonth);
+
+            if (!oSelectedMonth) {
+                console.error("Mês selecionado não encontrado nas opções:", sSelectedPeriod);
+                return;
+            }
+
+            await this._loadOrdersStatus(oSelectedMonth);
+            await this._loadDashboardKpis(oSelectedMonth);
+        }
 
     });
 });
