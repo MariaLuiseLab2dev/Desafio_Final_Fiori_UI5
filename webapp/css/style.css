@@ -1,3 +1,7 @@
+.dashboardRoot .sapMPanelHdr {
+    color: #0a2f5c;
+}
+
 .statusBadge {
     display: inline-block;
     padding: 6px 10px;
@@ -59,13 +63,13 @@
 
 .dashboardGaugeLabel {
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: normal;
     color: #0a2f5c;
 }
 
 .dashboardGaugePercent {
     font-size: 0.9rem;
-    font-weight: 700;
+    font-weight: normal;
     color: #0a2f5c;
     margin-bottom: 6px;
 }
