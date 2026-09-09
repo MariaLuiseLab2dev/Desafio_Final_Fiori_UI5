@@ -472,7 +472,7 @@
                             width="100%"
                             height="300px"
                             uiConfig="{applicationSet:'fiori'}"
-                            vizProperties="{title: {visible: false}, valueAxis: {title: {text: 'Quantidade de Pedidos'}}, plotArea: {dataLabel: {visible: true}, colorPalette: ['#E9601C', '#F0AB00', '#9DC90B', '#97A6B5', '#1F3A52']}}"
+                            vizProperties="{title: {visible: false}, valueAxis: {title: {text: 'Quantidade de Pedidos'}}, plotArea: {dataLabel: {visible: true}, colorPalette: ['#FF681A', '#FFA500', '#C4D600', '#9FADB8', '#3F5B70']}}"
                         >
                             <!-- dataset: de onde vêm os dados e como cada item se divide em categoria + valores -->
                             <viz:dataset>
@@ -557,7 +557,7 @@
                             width="100%"
                             height="300px"
                             uiConfig="{applicationSet:'fiori'}"
-                            vizProperties="{title: {visible: false}, valueAxis: {title: {text: 'Valor (R$)'}}, plotArea: {dataLabel: {visible: true}, colorPalette: ['#E8720C']}}"
+                            vizProperties="{title: {visible: false}, valueAxis: {title: {text: 'Valor (R$)'}}, plotArea: {dataLabel: {visible: true}, colorPalette: ['#FFA500']}}"
                         >
                             <!-- dataset: de onde vêm os dados e como cada item se divide em categoria + valores -->
                             <viz:dataset>

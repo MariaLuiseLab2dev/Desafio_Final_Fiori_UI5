@@ -100,6 +100,14 @@
     width: 100%;
 }
 
+.dashboardGaugeCentered .sapSuiteRMCTextColorCritical {
+    color: #005A7E !important;
+}
+
+.dashboardGaugeCentered .sapSuiteRMCPathCritical {
+    stroke: #005A7E !important;
+}
+
 .dashboardGaugeCentered .sapSuiteRMCVerticalAlignmentContainer {
     justify-content: center !important;
 }
