@@ -29,7 +29,8 @@ sap.ui.define([
                 await Promise.all([
                     this._updateCounts(),
                     this._loadStatusOptions(),
-                    this._loadAvailableMonths()
+                    this._loadAvailableMonths(),
+                    this._loadMaterialOptions()
                 ]);
 
                 const oSelect = this.byId("idStatusOptionsPortalSelect");
@@ -70,11 +71,16 @@ sap.ui.define([
                 this._sOriginalModelName = oBindingInfo.model || undefined;
             }
 
+
             // carregar o modelo dashhboardData com dados iniciais
             const oDashboardModel = new JSONModel({
                 monthOptions: [],
                 filter: { period: "" },
-                ordersStatus: { early: 0, earlyPercentage: 0, pending: 0, pendingPercentage: 0, onTime: 0, onTimePercentage: 0, outTime: 0, outTimePercentage: 0 }
+                ordersStatus: { early: 0, earlyPercentage: 0, pending: 0, pendingPercentage: 0, onTime: 0, onTimePercentage: 0, outTime: 0, outTimePercentage: 0 },
+                materialOptions: [],
+                productCompare: { material1: "", material2: "", percentageProduct1: 0, percentageProduct2: 0 },
+                totalPerRegion: { chartData: [] },
+                statusPerBuyerGroup: { chartData: [] }
             });
             this.getView().setModel(oDashboardModel, "dashboardData");
 
@@ -226,6 +232,24 @@ sap.ui.define([
             const number = Number(String(value).replace(/,/g, ""));
             if (isNaN(number)) return String(value);
             return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(number);
+        },
+
+        formatCompactCurrency: function (value) {
+            if (value == null) return "R$ 0,00";
+            return new Intl.NumberFormat("pt-BR", {
+                style: "currency", currency: "BRL",
+                notation: "compact", maximumFractionDigits: 1
+            }).format(value);
+        },
+
+        formatCompactNumber: function (value) {
+            if (value == null) return "0";
+            return new Intl.NumberFormat("pt-BR").format(value);
+        },
+
+        formatMinutes: function (value) {
+            if (value == null) return "0 min";
+            return `${value} min`;
         },
 
         formatDate: function (sIso) {
@@ -488,6 +512,124 @@ sap.ui.define([
             }
         },
 
+        _loadMaterialOptions: async function () {
+            const oDashboardModel = this.getView().getModel("dashboardData");
+            if (!oDashboardModel) {
+                console.error("_loadMaterialOptions: modelo 'dashboardData' não encontrado");
+                return;
+            }
+            try {
+                const res = await fetch("/odata/v4/request/Materials");
+                const oData = await res.json();
+
+                const aOptions = (oData.value || []).map(m => ({ key: m.ID, text: m.description }));
+                oDashboardModel.setProperty("/materialOptions", aOptions);
+                console.log("Opções de materiais carregadas:", aOptions);
+
+            } catch (err) {
+                console.error("Erro ao buscar opções de materiais:", err);
+            }
+        },
+
+        _loadProductCompareData: async function (oSelectedMonth, material1, material2) {
+            const oDashboardModel = this.getView().getModel("dashboardData");
+            if (!oDashboardModel) {
+                console.error("loadProductCompareData: modelo 'dashboardData' não encontrado");
+                return;
+            }
+
+            try {
+                const sMaterial1 = oDashboardModel.getProperty("/productCompare/material1");
+                const sMaterial2 = oDashboardModel.getProperty("/productCompare/material2");
+                
+                if (!sMaterial1 || !sMaterial2) {
+                    console.warn("loadProductCompareData: materiais não selecionados corretamente:", sMaterial1, sMaterial2);
+                    return;
+                }
+
+                const sUrl = `/odata/v4/dashboard/productCompare(material1='${sMaterial1}',material2='${sMaterial2}',month=${oSelectedMonth.month},year=${oSelectedMonth.year})`;
+                const res = await fetch(sUrl);
+                if (!res.ok) throw new Error("Erro ao buscar dados de comparação de produtos: " + res.status);
+                const oData = await res.json();
+                console.log("Dados de comparação de produtos recebidos:", oData);
+                oDashboardModel.setProperty("/productCompare/percentageProduct1", oData.percentage1 || 0);
+                oDashboardModel.setProperty("/productCompare/percentageProduct2", oData.percentage2 || 0);
+
+            } catch (err) {
+                console.error("Erro ao buscar dados de comparação de produtos:", err);
+            }
+        },
+
+        onProductCompareSelectChange: function () {
+            const oDashboardModel = this.getView().getModel("dashboardData");
+            if (!oDashboardModel) {
+                console.error("onProductCompareSelectChange: modelo 'dashboardData' não encontrado");
+                return;
+            }
+
+            const sSelectedPeriod = oDashboardModel.getProperty("/filter/period");
+            const oSelectedMonth = (oDashboardModel.getProperty("/monthOptions") || []).find(o => o.key === sSelectedPeriod);
+            if (!oSelectedMonth) {
+                console.warn("onProductCompareSelectChange: nenhum mês selecionado ainda, ignorando.");
+                return;
+            }
+
+            const sMaterial1 = oDashboardModel.getProperty("/productCompare/material1");
+            const sMaterial2 = oDashboardModel.getProperty("/productCompare/material2");
+
+            // _loadProductCompareData já protege contra material1/material2 vazios,
+            // mas aqui a gente também confere o mês antes de tentar buscar.
+            this._loadProductCompareData(oSelectedMonth, sMaterial1, sMaterial2);
+        },
+
+        _loadTotalPerRegion: async function (oSelectedMonth) {
+            const oDashboardModel = this.getView().getModel("dashboardData");
+
+            if (!oDashboardModel) {
+                console.error("_loadTotalPerRegion: modelo 'dashboardData' não encontrado");
+                return;
+            }
+
+            try {
+                const sUrl = `/odata/v4/dashboard/totalPerRegion(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`;
+                const res = await fetch(sUrl);
+                if (!res.ok) throw new Error("Erro ao buscar dados de total por região: " + res.status);
+                const oData = await res.json();
+                console.log("Dados de total por região recebidos:", oData);
+
+                const aChartData = (oData.value || []).map(o => ({
+                    name: o.name,
+                    centroOeste: o.regions[0],
+                    nordeste: o.regions[1],
+                    norte: o.regions[2],
+                    sudeste: o.regions[3],
+                    sul: o.regions[4]
+                }));
+                oDashboardModel.setProperty("/totalPerRegion/chartData", aChartData);
+            } catch (err) {
+                console.error("Erro ao buscar dados de total por região:", err);
+            }
+        },
+
+        _loadStatusPerBuyerGroup: async function (oSelectedMonth) {
+            const oDashboardModel = this.getView().getModel("dashboardData");
+            if (!oDashboardModel) {
+                console.error("_loadStaturPerBuyerGroup: modelo 'dashboardData' não encontrado");
+                return;
+            }
+
+            try {
+                const sUrl = `/odata/v4/dashboard/statusPerBuyerGroup(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`;
+                const res = await fetch(sUrl);
+                if (!res.ok) throw new Error("Erro ao buscar dados de status por tipo de comprador: " + res.status);
+                const oData = await res.json();
+                console.log("Dados de status por tipo de comprador recebidos:", oData);
+                oDashboardModel.setProperty("/statusPerBuyerGroup/chartData", oData.value || []);
+            } catch (err) {
+                console.error("Erro ao buscar dados de status por tipo de comprador:", err);
+            }
+        },
+
         onIniciarDashboardPress: async function () {
             const oDashboardModel = this.getView().getModel("dashboardData");
 
@@ -511,9 +653,13 @@ sap.ui.define([
                 console.error("Mês selecionado não encontrado nas opções:", sSelectedPeriod);
                 return;
             }
-
-            await this._loadOrdersStatus(oSelectedMonth);
-            await this._loadDashboardKpis(oSelectedMonth);
+            Promise.all([
+                this._loadOrdersStatus(oSelectedMonth),
+                this._loadDashboardKpis(oSelectedMonth),
+                this._loadProductCompareData(oSelectedMonth, oDashboardModel.getProperty("/productCompare/material1"), oDashboardModel.getProperty("/productCompare/material2")),
+                this._loadTotalPerRegion(oSelectedMonth),
+                this._loadStatusPerBuyerGroup(oSelectedMonth)
+            ]);
         }
 
     });

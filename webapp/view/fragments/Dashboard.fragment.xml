@@ -2,126 +2,336 @@
     xmlns="sap.m"
     xmlns:core="sap.ui.core"
     xmlns:microchart="sap.suite.ui.microchart"
+    xmlns:viz="sap.viz.ui5.controls"
+    xmlns:viz.data="sap.viz.ui5.data"
+    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
 >
-<VBox id="idDashboardFragmentVBox">
-    <Breadcrumbs 
-        id="idDashboardBreadcrumbs"
-    >
-    </Breadcrumbs>
+    <VBox id="idDashboardFragmentVBox">
+        <Breadcrumbs id="idDashboardBreadcrumbs" />
 
-    <Title id="idDashboardTitle" text="Controle de Compras" class="sapUiSmallMarginTop sapUiSmallMarginBottom" />
+        <Title
+            id="idDashboardTitle"
+            text="Controle de Compras"
+            class="sapUiSmallMarginTop sapUiSmallMarginBottom"
+        />
 
-    <Panel id="idDashboardFiltrosPanel" headerText="Filtros" class="sapUiSmallMarginBottom">
-        <content>
-           <HBox id="HBoxFiltros" class="sapUiSmallMargin">
-            <VBox id="idReferenceMonthVBox" class="sapUiMediumMarginEnd">
-                <Label id="idReferenceMonthText" text="Mês de Referência"></Label>
-                <Select 
-                    id="idReferenceMonthSelect" 
-                    width="12rem"
-                    selectedKey="{dashboardData>/filter/period}"
-                    items="{dashboardData>/monthOptions}"
+        <Panel
+            id="idDashboardFiltrosPanel"
+            headerText="Filtros"
+            class="sapUiSmallMarginBottom"
+        >
+            <content>
+                <HBox
+                    id="HBoxFiltros"
+                    class="sapUiSmallMargin"
                 >
-                    <core:Item id="idReferenceMonthItem" key="{dashboardData>key}" text="{dashboardData>text}"></core:Item>    
-                </Select>
-            </VBox>
-            
-            <Button id="idDshboardIniciarButton" text="Iniciar" press="onIniciarDashboardPress" class="sapUiSmallMarginTop"></Button>
-           </HBox>
-        </content>
-    </Panel>
+                    <VBox
+                        id="idReferenceMonthVBox"
+                        class="sapUiMediumMarginEnd"
+                    >
+                        <Label
+                            id="idReferenceMonthText"
+                            text="Mês de Referência"
+                        />
+                        <Select
+                            id="idReferenceMonthSelect"
+                            width="12rem"
+                            selectedKey="{dashboardData>/filter/period}"
+                            items="{dashboardData>/monthOptions}"
+                        >
+                            <core:Item
+                                id="idReferenceMonthItem"
+                                key="{dashboardData>key}"
+                                text="{dashboardData>text}"
+                            />
+                        </Select>
+                    </VBox>
 
-   <HBox id="idKpiHBox" justifyContent="SpaceBetween" wrap="Wrap" class="sapUiSmallMargin">
-            <VBox id="idKpiTotalComprasVBox" width="24%" class="dashboardKpiCard">
-                <HBox id="idKpiTotalComprasHBox" alignItems="Center">
-                    <core:Icon id="idKpiTotalComprasIcon" src="sap-icon://money-bills" class="dashboardKpiIcon" />
-                    <Text id="idKpiTotalComprasLabel" text="Total Geral Compras" class="dashboardKpiLabel" />
+                    <Button
+                        id="idDshboardIniciarButton"
+                        text="Iniciar"
+                        press="onIniciarDashboardPress"
+                        class="sapUiSmallMarginTop"
+                    />
                 </HBox>
-                <Text id="idKpiTotalComprasText" text="{path: 'dashboardData>/kpis/totalBuys', formatter: '.formatCompactCurrency'}" class="dashboardKpiValue" />
+            </content>
+        </Panel>
+
+        <HBox
+            id="idKpiHBox"
+            justifyContent="SpaceBetween"
+            wrap="Wrap"
+            class="sapUiSmallMargin"
+        >
+            <VBox
+                id="idKpiTotalComprasVBox"
+                width="24%"
+                class="dashboardKpiCard"
+            >
+                <HBox
+                    id="idKpiTotalComprasHBox"
+                    alignItems="Center"
+                >
+                    <core:Icon
+                        id="idKpiTotalComprasIcon"
+                        src="sap-icon://money-bills"
+                        class="dashboardKpiIcon"
+                    />
+                    <Text
+                        id="idKpiTotalComprasLabel"
+                        text="Total Geral Compras"
+                        class="dashboardKpiLabel"
+                    />
+                </HBox>
+                <Text
+                    id="idKpiTotalComprasText"
+                    text="{path: 'dashboardData>/kpis/totalBuys', formatter: '.formatCompactCurrency'}"
+                    class="dashboardKpiValue"
+                />
             </VBox>
-            
-            <VBox id="idKpiTotalPedidosVBox" width="24%" class="dashboardKpiCard">
-                <HBox id="idKpiTotalPedidosHBox" alignItems="Center">
-                    <core:Icon id="idKpiTotalPedidosIcon" src="sap-icon://sales-order" class="dashboardKpiIcon" />
-                    <Text id="idKpiTotalPedidosLabel" text="Total Geral Pedidos" class="dashboardKpiLabel" />
+
+            <VBox
+                id="idKpiTotalPedidosVBox"
+                width="24%"
+                class="dashboardKpiCard"
+            >
+                <HBox
+                    id="idKpiTotalPedidosHBox"
+                    alignItems="Center"
+                >
+                    <core:Icon
+                        id="idKpiTotalPedidosIcon"
+                        src="sap-icon://sales-order"
+                        class="dashboardKpiIcon"
+                    />
+                    <Text
+                        id="idKpiTotalPedidosLabel"
+                        text="Total Geral Pedidos"
+                        class="dashboardKpiLabel"
+                    />
                 </HBox>
-                <Text id="idKpiTotalPedidosText" text="{path: 'dashboardData>/kpis/totalOrders', formatter: '.formatCompactNumber'}" class="dashboardKpiValue" />
+                <Text
+                    id="idKpiTotalPedidosText"
+                    text="{path: 'dashboardData>/kpis/totalOrders', formatter: '.formatCompactNumber'}"
+                    class="dashboardKpiValue"
+                />
             </VBox>
-            
-            <VBox id="idKpiTotalProdutosVBox" width="24%" class="dashboardKpiCard">
-                <HBox id="idKpiTotalProdutosHBox" alignItems="Center">
-                    <core:Icon id="idKpiTotalProdutosIcon" src="sap-icon://product" class="dashboardKpiIcon" />
-                    <Text id="idKpiTotalProdutosLabel" text="Total Geral Produtos" class="dashboardKpiLabel" />
+
+            <VBox
+                id="idKpiTotalProdutosVBox"
+                width="24%"
+                class="dashboardKpiCard"
+            >
+                <HBox
+                    id="idKpiTotalProdutosHBox"
+                    alignItems="Center"
+                >
+                    <core:Icon
+                        id="idKpiTotalProdutosIcon"
+                        src="sap-icon://product"
+                        class="dashboardKpiIcon"
+                    />
+                    <Text
+                        id="idKpiTotalProdutosLabel"
+                        text="Total Geral Produtos"
+                        class="dashboardKpiLabel"
+                    />
                 </HBox>
-                <Text id="idKpiTotalProdutosText" text="{path: 'dashboardData>/kpis/totalProducts', formatter: '.formatCompactNumber'}" class="dashboardKpiValue" />
+                <Text
+                    id="idKpiTotalProdutosText"
+                    text="{path: 'dashboardData>/kpis/totalProducts', formatter: '.formatCompactNumber'}"
+                    class="dashboardKpiValue"
+                />
             </VBox>
-            <VBox id="idKpiMediaTempoVBox" width="24%" class="dashboardKpiCard">
-                <HBox id="idKpiMediaTempoHBox" alignItems="Center">
-                    <core:Icon id="idKpiMediaTempoIcon" src="sap-icon://history" class="dashboardKpiIcon" />
-                    <Text id="idKpiMediaTempoLabel" text="Média Tempo Geral Atendimento" class="dashboardKpiLabel" />
+            <VBox
+                id="idKpiMediaTempoVBox"
+                width="24%"
+                class="dashboardKpiCard"
+            >
+                <HBox
+                    id="idKpiMediaTempoHBox"
+                    alignItems="Center"
+                >
+                    <core:Icon
+                        id="idKpiMediaTempoIcon"
+                        src="sap-icon://history"
+                        class="dashboardKpiIcon"
+                    />
+                    <Text
+                        id="idKpiMediaTempoLabel"
+                        text="Média Tempo Geral Atendimento"
+                        class="dashboardKpiLabel"
+                    />
                 </HBox>
-                <Text id="idKpiMediaTempoText" text="{path: 'dashboardData>/kpis/averageLeadTime', formatter: '.formatMinutes'}" class="dashboardKpiValue" />
+                <Text
+                    id="idKpiMediaTempoText"
+                    text="{path: 'dashboardData>/kpis/averageLeadTime', formatter: '.formatMinutes'}"
+                    class="dashboardKpiValue"
+                />
             </VBox>
         </HBox>
 
-        <HBox id="idDashboardsAndamentoEComparativo" justifyContent="SpaceBetween" wrap="Wrap" class="sapUiSmallMargin">
-            <VBox id="idAndamentoPedidosVBox" width="50%">
-                <Panel id="idAndamentoDosPedidosPanel" headerText="Andamento dos Pedidos" >
+        <HBox
+            id="idDashboardsAndamentoEComparativo"
+            justifyContent="SpaceBetween"
+            wrap="Wrap"
+            class="sapUiSmallMargin"
+        >
+            <VBox
+                id="idAndamentoPedidosVBox"
+                width="48%"
+            >
+                <Panel
+                    id="idAndamentoDosPedidosPanel"
+                    headerText="Andamento dos Pedidos"
+                >
                     <content>
-                        <HBox id="idAndamentoPedidosDonutsHBox" justifyContent="SpaceBetween" wrap="Wrap">
-                            <VBox id="idDonutEntregaAntecipadaVBox" width="24%" alignItems="Center">
-                                <Text id="idDonutEntregaAntecipadaLabel" text="Entrega Antecipada" textAlign="Center" class="dashboardGaugeLabel" />
-                                <Text id="idDonutEntregaAntecipadaPercent"  text="{dashboardData>/ordersStatus/earlyPercentage}%" textAlign="Center" class="dashboardGaugePercent" />
-                                <VBox id="idDonutEntregaAntecipadaGaugeWrap" class="dashboardGaugeWrap" alignItems="Center">
+                        <HBox
+                            id="idAndamentoPedidosDonutsHBox"
+                            justifyContent="SpaceBetween"
+                            wrap="Wrap"
+                        >
+                            <VBox
+                                id="idDonutEntregaAntecipadaVBox"
+                                width="24%"
+                                alignItems="Center"
+                            >
+                                <Text
+                                    id="idDonutEntregaAntecipadaLabel"
+                                    text="Entrega Antecipada"
+                                    textAlign="Center"
+                                    class="dashboardGaugeLabel"
+                                />
+                                <Text
+                                    id="idDonutEntregaAntecipadaPercent"
+                                    text="{dashboardData>/ordersStatus/earlyPercentage}%"
+                                    textAlign="Center"
+                                    class="dashboardGaugePercent"
+                                />
+                                <VBox
+                                    id="idDonutEntregaAntecipadaGaugeWrap"
+                                    class="dashboardGaugeWrap"
+                                    alignItems="Center"
+                                >
                                     <microchart:RadialMicroChart
                                         id="idDonutEntregaAntecipadaVizFrame"
                                         percentage="{dashboardData>/ordersStatus/earlyPercentage}"
                                         valueColor="Good"
-                                        size="M"
+                                        size="S"
                                     />
-                                    <Text id="idDonutEntregaAntecipadaCenterText"  text="{dashboardData>/ordersStatus/early}" class="dashboardGaugeCenterText" />
+                                    <Text
+                                        id="idDonutEntregaAntecipadaCenterText"
+                                        text="{dashboardData>/ordersStatus/early}"
+                                        class="dashboardGaugeCenterText"
+                                    />
                                 </VBox>
                             </VBox>
 
-                            <VBox id="idDonutEntregaPendenteVBox" width="24%" alignItems="Center">
-                                <Text id="idDonutEntregaPendenteLabel" text="Entrega Pendente" textAlign="Center" class="dashboardGaugeLabel" />
-                                <Text id="idDonutEntregaPendentePercent" text="{dashboardData>/ordersStatus/pendingPercentage}%" textAlign="Center" class="dashboardGaugePercent" />
-                                <VBox id="idDonutEntregaPendenteGaugeWrap" class="dashboardGaugeWrap" alignItems="Center">
+                            <VBox
+                                id="idDonutEntregaPendenteVBox"
+                                width="24%"
+                                alignItems="Center"
+                            >
+                                <Text
+                                    id="idDonutEntregaPendenteLabel"
+                                    text="Entrega Pendente"
+                                    textAlign="Center"
+                                    class="dashboardGaugeLabel"
+                                />
+                                <Text
+                                    id="idDonutEntregaPendentePercent"
+                                    text="{dashboardData>/ordersStatus/pendingPercentage}%"
+                                    textAlign="Center"
+                                    class="dashboardGaugePercent"
+                                />
+                                <VBox
+                                    id="idDonutEntregaPendenteGaugeWrap"
+                                    class="dashboardGaugeWrap"
+                                    alignItems="Center"
+                                >
                                     <microchart:RadialMicroChart
                                         id="idDonutEntregaPendenteVizFrame"
                                         percentage="{dashboardData>/ordersStatus/pendingPercentage}"
                                         valueColor="Good"
-                                        size="M"
+                                        size="S"
                                     />
-                                    <Text id="idDonutEntregaPendenteCenterText" text="{dashboardData>/ordersStatus/pending}" class="dashboardGaugeCenterText" />
+                                    <Text
+                                        id="idDonutEntregaPendenteCenterText"
+                                        text="{dashboardData>/ordersStatus/pending}"
+                                        class="dashboardGaugeCenterText"
+                                    />
                                 </VBox>
                             </VBox>
 
-                            <VBox id="idDonutEntregaNoPrazoVBox" width="24%" alignItems="Center">
-                                <Text id="idDonutEntregaNoPrazoLabel" text="Entrega No Prazo" textAlign="Center" class="dashboardGaugeLabel" />
-                                <Text id="idDonutEntregaNoPrazoPercent" text="{dashboardData>/ordersStatus/onTimePercentage}%" textAlign="Center" class="dashboardGaugePercent" />
-                                <VBox id="idDonutEntregaNoPrazoGaugeWrap" class="dashboardGaugeWrap" alignItems="Center">
+                            <VBox
+                                id="idDonutEntregaNoPrazoVBox"
+                                width="24%"
+                                alignItems="Center"
+                            >
+                                <Text
+                                    id="idDonutEntregaNoPrazoLabel"
+                                    text="Entrega No Prazo"
+                                    textAlign="Center"
+                                    class="dashboardGaugeLabel"
+                                />
+                                <Text
+                                    id="idDonutEntregaNoPrazoPercent"
+                                    text="{dashboardData>/ordersStatus/onTimePercentage}%"
+                                    textAlign="Center"
+                                    class="dashboardGaugePercent"
+                                />
+                                <VBox
+                                    id="idDonutEntregaNoPrazoGaugeWrap"
+                                    class="dashboardGaugeWrap"
+                                    alignItems="Center"
+                                >
                                     <microchart:RadialMicroChart
                                         id="idDonutEntregaNoPrazoVizFrame"
                                         percentage="{dashboardData>/ordersStatus/onTimePercentage}"
                                         valueColor="Good"
-                                        size="M"
+                                        size="S"
                                     />
-                                    <Text id="idDonutEntregaNoPrazoCenterText" text="{dashboardData>/ordersStatus/onTime}" class="dashboardGaugeCenterText" />
+                                    <Text
+                                        id="idDonutEntregaNoPrazoCenterText"
+                                        text="{dashboardData>/ordersStatus/onTime}"
+                                        class="dashboardGaugeCenterText"
+                                    />
                                 </VBox>
                             </VBox>
 
-                            <VBox id="idDonutEntregaForaPrazoVBox" width="24%" alignItems="Center">
-                                <Text id="idDonutEntregaForaPrazoLabel" text="Entrega Fora do Prazo" textAlign="Center" class="dashboardGaugeLabel" />
-                                <Text id="idDonutEntregaForaPrazoPercent" text="{dashboardData>/ordersStatus/outTimePercentage}%" textAlign="Center" class="dashboardGaugePercent" />
-                                <VBox id="idDonutEntregaForaPrazoGaugeWrap" class="dashboardGaugeWrap" alignItems="Center">
+                            <VBox
+                                id="idDonutEntregaForaPrazoVBox"
+                                width="24%"
+                                alignItems="Center"
+                            >
+                                <Text
+                                    id="idDonutEntregaForaPrazoLabel"
+                                    text="Entrega Fora do Prazo"
+                                    textAlign="Center"
+                                    class="dashboardGaugeLabel"
+                                />
+                                <Text
+                                    id="idDonutEntregaForaPrazoPercent"
+                                    text="{dashboardData>/ordersStatus/outTimePercentage}%"
+                                    textAlign="Center"
+                                    class="dashboardGaugePercent"
+                                />
+                                <VBox
+                                    id="idDonutEntregaForaPrazoGaugeWrap"
+                                    class="dashboardGaugeWrap"
+                                    alignItems="Center"
+                                >
                                     <microchart:RadialMicroChart
                                         id="idDonutEntregaForaPrazoVizFrame"
                                         percentage="{dashboardData>/ordersStatus/outTimePercentage}"
                                         valueColor="Good"
-                                        size="M"
+                                        size="S"
                                     />
-                                    <Text id="idDonutEntregaForaPrazoCenterText" text="{dashboardData>/ordersStatus/outTime}" class="dashboardGaugeCenterText" />
+                                    <Text
+                                        id="idDonutEntregaForaPrazoCenterText"
+                                        text="{dashboardData>/ordersStatus/outTime}"
+                                        class="dashboardGaugeCenterText"
+                                    />
                                 </VBox>
                             </VBox>
                         </HBox>
@@ -129,32 +339,273 @@
                 </Panel>
             </VBox>
 
-            <VBox id="idComparativoDoisProdutosVBox" width="48%">
-                <Panel id="idComparativoDoisProdutosPanel" headerText="Comparativo 2 Produtos" ></Panel>
+            <VBox
+                id="idComparativoDoisProdutosVBox"
+                width="48%"
+            >
+                <Panel
+                    id="idComparativoDoisProdutosPanel"
+                    headerText="Comparativo 2 Produtos"
+                >
+                    <HBox id="idHBoxComparativo2Produtos">
+                        <VBox
+                            id="idProduto1VBox"
+                            width="48%"
+                            class="sapUiSmallMarginEnd"
+                        >
+                            <HBox
+                                id="idProduto1LabelSelectHBox"
+                                alignItems="Center"
+                            >
+                                <Label
+                                    id="idLabelProduto1"
+                                    text="Produto 1:"
+                                    class="sapUiTinyMarginEnd"
+                                />
+                                <Select
+                                    id="idSelectProduto1"
+                                    selectedKey="{dashboardData>/productCompare/material1}"
+                                    items="{dashboardData>/materialOptions}"
+                                    change="onProductCompareSelectChange"
+                                >
+                                    <layoutData>
+                                        <FlexItemData
+                                            id="FlexItemData1"
+                                            growFactor="1"
+                                            minWidth="0"
+                                        />
+                                    </layoutData>
+                                    <core:Item
+                                        id="idCoreItemProduto1"
+                                        key="{dashboardData>key}"
+                                        text="{dashboardData>text}"
+                                    />
+                                </Select>
+                            </HBox>
+
+                            <VBox
+                                id="idProduto1GaugeWrap"
+                                class="dashboardGaugeCentered sapUiSmallMarginTop"
+                                alignItems="Center"
+                            >
+                                <microchart:RadialMicroChart
+                                    id="idProduto1MicroChart"
+                                    percentage="{dashboardData>/productCompare/percentageProduct1}"
+                                    valueColor="Critical"
+                                    size="M"
+                                />
+                            </VBox>
+                        </VBox>
+
+                        <!-- material 2 -->
+                        <VBox
+                            id="idProduto2VBox"
+                            width="48%"
+                            class="sapUiSmallMarginStart"
+                        >
+                            <HBox
+                                id="idProduto2LabelSelectHBox"
+                                alignItems="Center"
+                            >
+                                <Label
+                                    id="idLabelProduto2"
+                                    text="Produto 2:"
+                                    class="sapUiTinyMarginEnd"
+                                />
+                                <Select
+                                    id="idSelectProduto2"
+                                    selectedKey="{dashboardData>/productCompare/material2}"
+                                    items="{dashboardData>/materialOptions}"
+                                    change="onProductCompareSelectChange"
+                                >
+                                    <layoutData>
+                                        <FlexItemData
+                                            id="FlexItemData2"
+                                            growFactor="1"
+                                            minWidth="0"
+                                        />
+                                    </layoutData>
+                                    <core:Item
+                                        id="idCoreItemProduto2"
+                                        key="{dashboardData>key}"
+                                        text="{dashboardData>text}"
+                                    />
+                                </Select>
+                            </HBox>
+
+                            <VBox
+                                id="idProduto2GaugeWrap"
+                                class="dashboardGaugeCentered sapUiSmallMarginTop"
+                                alignItems="Center"
+                            >
+                                <microchart:RadialMicroChart
+                                    id="idProduto2MicroChart"
+                                    percentage="{dashboardData>/productCompare/percentageProduct2}"
+                                    valueColor="Critical"
+                                    size="M"
+                                />
+                            </VBox>
+                        </VBox>
+                    </HBox>
+                </Panel>
             </VBox>
         </HBox>
 
-        <HBox id="idDashboardsTotalPedidoEStatus" justifyContent="SpaceBetween" wrap="Wrap" class="sapUiSmallMargin">
-            
-            <VBox id="idTotalPedidoStatusVBox" width="48%">
-                <Panel id="idDashboardTotalPedidos" headerText="Total Pedido x Status">
+        <HBox
+            id="idDashboardsTotalPedidoEStatus"
+            justifyContent="SpaceBetween"
+            wrap="Wrap"
+            class="sapUiSmallMargin"
+        >
+            <VBox
+                id="idTotalPedidoStatusVBox"
+                width="48%"
+            >
+                <Panel
+                    id="idDashboardTotalPedidos"
+                    headerText="Total Pedido x Comprador x Região"
+                >
                     <content>
+                        <viz:VizFrame
+                            id="idTotalPorRegiaoVizFrame"
+                            vizType="column"
+                            width="100%"
+                            height="300px"
+                            uiConfig="{applicationSet:'fiori'}"
+                            vizProperties="{title: {visible: false}, valueAxis: {title: {text: 'Quantidade de Pedidos'}}, plotArea: {dataLabel: {visible: true}}}"
+                        >
+                            <!-- dataset: de onde vêm os dados e como cada item se divide em categoria + valores -->
+                            <viz:dataset>
+                                <viz.data:FlattenedDataset
+                                    id="idTotalPorRegiaoDataset"
+                                    data="{dashboardData>/totalPerRegion/chartData}"
+                                >
+                                    <!-- dimensions: o campo que vira o eixo X (categoria de cada grupo de barras) -->
+                                    <viz.data:dimensions>
+                                        <viz.data:DimensionDefinition
+                                            id="idTotalPorRegiaoDim"
+                                            name="Comprador"
+                                            value="{dashboardData>name}"
+                                        />
+                                    </viz.data:dimensions>
 
+                                    <!-- measures: os valores plotados, um por série/barra -->
+                                    <viz.data:measures>
+                                        <viz.data:MeasureDefinition
+                                            id="idMeasCentroOeste"
+                                            name="Centro-Oeste"
+                                            value="{dashboardData>centroOeste}"
+                                        />
+                                        <viz.data:MeasureDefinition
+                                            id="idMeasNordeste"
+                                            name="Nordeste"
+                                            value="{dashboardData>nordeste}"
+                                        />
+                                        <viz.data:MeasureDefinition
+                                            id="idMeasNorte"
+                                            name="Norte"
+                                            value="{dashboardData>norte}"
+                                        />
+                                        <viz.data:MeasureDefinition
+                                            id="idMeasSudeste"
+                                            name="Sudeste"
+                                            value="{dashboardData>sudeste}"
+                                        />
+                                        <viz.data:MeasureDefinition
+                                            id="idMeasSul"
+                                            name="Sul"
+                                            value="{dashboardData>sul}"
+                                        />
+                                    </viz.data:measures>
+                                </viz.data:FlattenedDataset>
+                            </viz:dataset>
+
+                            <!-- feeds: liga as definições acima aos eixos reais do gráfico -->
+                            <viz:feeds>
+                                <!-- valueAxis recebe as 5 measures -> vira a altura das barras -->
+                                <viz.feeds:FeedItem
+                                    id="idTotalPorRegiaoFeedVal"
+                                    uid="valueAxis"
+                                    type="Measure"
+                                    values="Centro-Oeste,Nordeste,Norte,Sudeste,Sul"
+                                />
+                                <!-- categoryAxis recebe a dimension -> vira o eixo X -->
+                                <viz.feeds:FeedItem
+                                    id="idTotalPorRegiaoFeedCat"
+                                    uid="categoryAxis"
+                                    type="Dimension"
+                                    values="Comprador"
+                                />
+                            </viz:feeds>
+                        </viz:VizFrame>
                     </content>
                 </Panel>
             </VBox>
 
-            <VBox id="idStatusTipoDespesa" width="48%">
-                <Panel id="idDashboardStatusTipoDespesa" headerText="Status por tipo de despesa">
+            <VBox
+                id="idStatusTipoDespesa"
+                width="48%"
+            >
+                <Panel
+                    id="idDashboardStatusTipoComprador"
+                    headerText="Valores por Tipo de Comprador"
+                >
                     <content>
+                         <viz:VizFrame
+                            id="idStatusTipoCompradorVizFrame"
+                            vizType="bar"
+                            width="100%"
+                            height="300px"
+                            uiConfig="{applicationSet:'fiori'}"
+                            vizProperties="{title: {visible: false}, valueAxis: {title: {text: 'Valor (R$)'}}, plotArea: {dataLabel: {visible: true}}}"
+                        >
+                            <!-- dataset: de onde vêm os dados e como cada item se divide em categoria + valores -->
+                            <viz:dataset>
+                                <viz.data:FlattenedDataset
+                                    id="idStatusTipoCompradorDataset"
+                                    data="{dashboardData>/statusPerBuyerGroup/chartData}"
+                                >
+                                    <!-- dimensions: o campo que vira o eixo X (categoria de cada grupo de barras) -->
+                                    <viz.data:dimensions>
+                                        <viz.data:DimensionDefinition
+                                            id="idStatusTipoCompradorDim"
+                                            name="Comprador"
+                                            value="{dashboardData>name}"
+                                        />
+                                    </viz.data:dimensions>
 
+                                    <!-- measures: os valores plotados, um por série/barra -->
+                                    <viz.data:measures>
+                                        <viz.data:MeasureDefinition
+                                            id="idMeasComprador"
+                                            name="Valor"
+                                            value="{dashboardData>value}"
+                                        />
+                                    </viz.data:measures>
+                                </viz.data:FlattenedDataset>
+                            </viz:dataset>
+
+                            <!-- feeds: liga as definições acima aos eixos reais do gráfico -->
+                            <viz:feeds>
+                                <!-- valueAxis recebe a measure -> vira a largura das barras -->
+                                <viz.feeds:FeedItem
+                                    id="idValorTipoCompradorFeedVal"
+                                    uid="valueAxis"
+                                    type="Measure"
+                                    values="Valor"
+                                />
+                                <!-- categoryAxis recebe a dimension -> vira o eixo X -->
+                                <viz.feeds:FeedItem
+                                    id="idValorTipoCompradorFeedCat"
+                                    uid="categoryAxis"
+                                    type="Dimension"
+                                    values="Comprador"
+                                />
+                            </viz:feeds>
+                        </viz:VizFrame>
                     </content>
                 </Panel>
             </VBox>
-
         </HBox>
-
-    
-</VBox>
-
+    </VBox>
 </core:FragmentDefinition>

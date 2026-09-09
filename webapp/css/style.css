@@ -21,14 +21,23 @@
 }
 
 .dashboardKpiIcon {
-    color: #1f2d37; /* Azul */
-    margin-right: 6px; 
+    color: #0a2f5c;
+    margin-right: 6px;
     font-size: 1rem;
 }
 
 .dashboardKpiLabel {
-    font-weight: 600;
-    color: #1f2d37; /* Azul */
+    color: #0a2f5c;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.dashboardKpiValue {
+    color: #e8720c;
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: block;
+    margin-top: 4px;
 }
 
 .sapSuiteRMCPath {
@@ -50,6 +59,15 @@
 
 .dashboardGaugeLabel {
     font-size: 0.8rem;
+    font-weight: 600;
+    color: #0a2f5c;
+}
+
+.dashboardGaugePercent {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #0a2f5c;
+    margin-bottom: 6px;
 }
 
 .dashboardGaugeWrap > .sapMFlexItem {
@@ -68,6 +86,20 @@
     width: max-content !important;
     max-width: none !important;
     font-weight: 700;
+    color: #0a2f5c;
     pointer-events: none;
     text-align: center !important;
+}
+
+.dashboardGaugeCentered {
+    position: relative;
+    width: 100%;
+}
+
+.dashboardGaugeCentered .sapSuiteRMCVerticalAlignmentContainer {
+    justify-content: center !important;
+}
+
+.dashboardGaugeCentered > .sapMFlexItem {
+    position: static !important;
 }
