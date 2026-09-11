@@ -3,6 +3,14 @@
     xmlns:core="sap.ui.core"
 >
     <VBox id="idListContent" visible="{view>/showList}">
+        <Breadcrumbs id="idPortalConsultaBreadcrumbs" />
+
+        <Title
+            id="idPortalConsultaTitle"
+            text="Portal de Consulta de Saldos RCs"
+            class="sapUiSmallMarginTop sapUiSmallMarginBottom"
+        />
+
         <Panel
             id="idFiltersPortalPanel"
             headerText="Filtros"
