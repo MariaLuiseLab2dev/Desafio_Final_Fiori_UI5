@@ -2,6 +2,14 @@
     color: #0a2f5c;
 }
 
+[id$="idFiltersPortalPanel"] .sapMPanelHdr {
+    color: #0a2f5c;
+}
+
+[id$="idTotalRequisicoesTextTitle"] {
+    color: #0a2f5c;
+}
+
 [id$="idBotoesHBox"] {
     margin-top: 37px !important;
 }
@@ -12,12 +20,14 @@
 
 .statusBadge {
     display: inline-block;
-    padding: 6px 10px;
+    padding: 5px 8px;
     border-radius: 10px;
     font-weight: 600;
+    font-size: 0.75rem;
     color: #ffffff;
     min-width: 100px;
     text-align: center;
+    white-space: nowrap;
 }
 
 .statusApproved { background-color: #28a745 !important; }

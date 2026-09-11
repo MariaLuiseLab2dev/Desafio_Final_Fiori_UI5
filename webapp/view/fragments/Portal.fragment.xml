@@ -190,7 +190,7 @@
                             text="Data de Criação"
                         />
                     </Column>
-                    <Column id="idStatusColumn">
+                    <Column id="idStatusColumn" width="10rem">
                         <Text
                             id="idStatussText"
                             text="Status"
