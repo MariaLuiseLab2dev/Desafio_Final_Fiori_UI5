@@ -103,10 +103,12 @@ sap.ui.define([
             }
 
             try {
-                const res = await fetch(this._getServiceUrl("odata/v4/request/BuyerRequests?$apply=groupby((status))"));
-                if (!res.ok) throw new Error("Erro ao buscar status: " + res.status);
-                const json = await res.json();
-                const aStatuses = (json.value || []).map(o => o.status).filter(Boolean);
+                const oModel = this.getOwnerComponent().getModel("atvosRc");
+                const oBinding = oModel.bindList("/BuyerRequests", undefined, undefined, undefined, {
+                    $apply: "groupby((status))"
+                });
+                const aContexts = await oBinding.requestContexts();
+                const aStatuses = aContexts.map(oContext => oContext.getObject().status).filter(Boolean);
 
                 const STATUS_LABELS = {
                     WAITING: "Aguardando Aprovação",
@@ -140,10 +142,10 @@ sap.ui.define([
             }
 
             try {
-                const res = await fetch(this._getServiceUrl("odata/v4/request/BuyerRequests?$top=10"));
-                if (!res.ok) throw new Error("HTTP " + res.status);
-                const data = await res.json();
-                const iCount = (data.value || []).length;
+                const oModel = this.getOwnerComponent().getModel("atvosRc");
+                const oBinding = oModel.bindList("/BuyerRequests");
+                const aContexts = await oBinding.requestContexts(0, 10); // iStart, iLength — equivalente ao $top=10
+                const iCount = aContexts.length;
                 oLocalModel.setProperty("/counts/totalRequisicoes", iCount);
                 oLocalModel.setProperty("/counts/totalRequisicoesText", `Requisições de Compra (${iCount})`);
             } catch (err) {
@@ -221,18 +223,6 @@ sap.ui.define([
             });
         },
 
-        /**
-         * Resolve um caminho relativo (ex: "odata/v4/request/BuyerRequests")
-         * pra URL absoluta baseada em onde o app realmente está montado
-         * (raiz local, sandbox do BAS em /test/, ou subcaminho do HTML5
-         * Application Repository quando deployado) — evita 404 causado por
-         * caminhos com barra inicial (resolvem da raiz do domínio) ou
-         * caminhos relativos simples (resolvem da pasta do documento atual).
-         */
-        _getServiceUrl: function (sPath) {
-            return sap.ui.require.toUrl("finalprojectui5/" + sPath);
-        },
-
         // Formatadores
         formatRequestNumber: function (v) {
             if (v == null) return "";
@@ -293,20 +283,21 @@ sap.ui.define([
 
                 if (sDateFilter) sFilter = sFilter ? `${sFilter} and (${sDateFilter})` : sDateFilter;
 
-                const sCountUrl = this._getServiceUrl("odata/v4/request/BuyerRequests/$count") + (sFilter ? `?$filter=${encodeURIComponent(sFilter)}` : "");
-                console.log("Count URL:", sCountUrl);
                 console.log("sFilter (raw):", sFilter);
 
-                const resCount = await fetch(sCountUrl, { method: "GET", headers: { "Accept": "text/plain" } });
-                if (resCount.ok) {
-                    const sText = await resCount.text();
-                    const iCount = Number(sText) || 0;
-                    if (oLocal) {
-                        oLocal.setProperty("/counts/totalRequisicoes", iCount);
-                        oLocal.setProperty("/counts/totalRequisicoesText", `Requisições de Compra (${iCount})`);
-                    }
-                    return;
+                const oModel = this.getOwnerComponent().getModel("atvosRc");
+                const mParameters = { $count: true };
+                if (sFilter) mParameters.$filter = sFilter;
+
+                const oBinding = oModel.bindList("/BuyerRequests", undefined, undefined, undefined, mParameters);
+                await oBinding.requestContexts(0, 1); // dispara a requisição pra popular o $count
+                const iCount = oBinding.getCount() || 0;
+
+                if (oLocal) {
+                    oLocal.setProperty("/counts/totalRequisicoes", iCount);
+                    oLocal.setProperty("/counts/totalRequisicoesText", `Requisições de Compra (${iCount})`);
                 }
+                return;
             } catch (err) {
                 console.error("_updateCountsWithFilters erro:", err);
                 const oLocal = this.getView().getModel("local");
@@ -328,10 +319,12 @@ sap.ui.define([
 
             try {
                 if (oFilterState.numero || oFilterState.material) {
-                    const res = await fetch(this._getServiceUrl("odata/v4/request/BuyerRequests?$expand=material,classification,group"));
-                    if (!res.ok) throw new Error("Erro ao buscar BuyerRequests: " + res.status);
-                    const json = await res.json();
-                    const aAll = json.value || [];
+                    const oRequestModel = oTable.getModel(this._sOriginalModelName) || this.getOwnerComponent().getModel("atvosRc");
+                    const oBinding = oRequestModel.bindList("/BuyerRequests", undefined, undefined, undefined, {
+                        $expand: "material,classification,group"
+                    });
+                    const aContexts = await oBinding.requestContexts();
+                    const aAll = aContexts.map(oContext => oContext.getObject());
                     const aFiltered = Helpers.applyClientSideIncludes(aAll, oFilterState);
                     const oModel = new JSONModel({ BuyerRequests: aFiltered });
                     oTable.setModel(oModel, "atvosRc");
@@ -420,10 +413,11 @@ sap.ui.define([
             if (oListContent) oListContent.setBusy(true);
 
             try {
-                const sUrl = this._getServiceUrl(`odata/v4/request/BuyerRequests(${sRequisitionId})?$expand=material,classification,group`);
-                const res = await fetch(sUrl);
-                if (!res.ok) throw new Error("Erro ao buscar detalhes: " + res.status);
-                const oData = await res.json();
+                const oModel = this.getOwnerComponent().getModel("atvosRc");
+                const oContextBinding = oModel.bindContext(`/BuyerRequests(${sRequisitionId})`, undefined, {
+                    $expand: "material,classification,group"
+                });
+                const oData = await oContextBinding.getBoundContext().requestObject();
                 console.log("Detalhes recebidos:", oData);
                 this.getView().setModel(new JSONModel(oData), "oDetails");
                 oViewModel.setProperty("/showList", false);
@@ -479,10 +473,9 @@ sap.ui.define([
             }
 
             try {
-                const sUrl = this._getServiceUrl(`odata/v4/dashboard/ordersStatus(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`);
-                const res = await fetch(sUrl);
-                if (!res.ok) throw new Error("Erro ao buscar dados do dashboard: " + res.status);
-                const oData = await res.json();
+                const oModel = this.getOwnerComponent().getModel("dashboard");
+                const oContextBinding = oModel.bindContext(`/ordersStatus(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`, undefined);
+                const oData = await oContextBinding.getBoundContext().requestObject();
                 console.log("Dados do dashboard recebidos:", oData);
 
                 oDashboardModel.setProperty("/ordersStatus", {
@@ -508,10 +501,9 @@ sap.ui.define([
             }
 
             try {
-                const sUrl = this._getServiceUrl(`odata/v4/dashboard/kpis(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`);
-                const res = await fetch(sUrl);
-                if (!res.ok) throw new Error("Erro ao buscar KPIs do dashboard: " + res.status);
-                const oData = await res.json();
+                const oModel = this.getOwnerComponent().getModel("dashboard");
+                const oContextBinding = oModel.bindContext(`/kpis(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`, undefined);
+                const oData = await oContextBinding.getBoundContext().requestObject();
                 console.log("KPIs do dashboard recebidos:", oData);
                 oDashboardModel.setProperty("/kpis", {
                     totalBuys: oData.totalBuys || 0,
@@ -531,10 +523,12 @@ sap.ui.define([
                 return;
             }
             try {
-                const res = await fetch(this._getServiceUrl("odata/v4/request/Materials"));
-                const oData = await res.json();
+                const oModel = this.getOwnerComponent().getModel("atvosRc");
+                const oBinding = oModel.bindList("/Materials", undefined);
+                const aContexts = await oBinding.requestContexts();
+                const aMaterials = aContexts.map(oContext => oContext.getObject());
 
-                const aOptions = (oData.value || []).map(m => ({ key: m.ID, text: m.description }));
+                const aOptions = aMaterials.map(m => ({ key: m.ID, text: m.description }));
                 oDashboardModel.setProperty("/materialOptions", aOptions);
                 console.log("Opções de materiais carregadas:", aOptions);
 
@@ -559,10 +553,9 @@ sap.ui.define([
                     return;
                 }
 
-                const sUrl = this._getServiceUrl(`odata/v4/dashboard/productCompare(material1='${sMaterial1}',material2='${sMaterial2}',month=${oSelectedMonth.month},year=${oSelectedMonth.year})`);
-                const res = await fetch(sUrl);
-                if (!res.ok) throw new Error("Erro ao buscar dados de comparação de produtos: " + res.status);
-                const oData = await res.json();
+                const oModel = this.getOwnerComponent().getModel("dashboard");
+                const oContextBinding = oModel.bindContext(`/productCompare(material1='${sMaterial1}',material2='${sMaterial2}',month=${oSelectedMonth.month},year=${oSelectedMonth.year})`, undefined);
+                const oData = await oContextBinding.getBoundContext().requestObject();
                 console.log("Dados de comparação de produtos recebidos:", oData);
                 oDashboardModel.setProperty("/productCompare/percentageProduct1", oData.percentage1 || 0);
                 oDashboardModel.setProperty("/productCompare/percentageProduct2", oData.percentage2 || 0);
@@ -603,13 +596,13 @@ sap.ui.define([
             }
 
             try {
-                const sUrl = this._getServiceUrl(`odata/v4/dashboard/totalPerRegion(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`);
-                const res = await fetch(sUrl);
-                if (!res.ok) throw new Error("Erro ao buscar dados de total por região: " + res.status);
-                const oData = await res.json();
-                console.log("Dados de total por região recebidos:", oData);
+                const oModel = this.getOwnerComponent().getModel("dashboard");
+                const oBinding = oModel.bindList(`/totalPerRegion(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`, undefined);
+                const aContexts = await oBinding.requestContexts();
+                const aRegions = aContexts.map(oContext => oContext.getObject());
+                console.log("Dados de total por região recebidos:", aRegions);
 
-                const aChartData = (oData.value || []).map(o => ({
+                const aChartData = aRegions.map(o => ({
                     name: o.name,
                     centroOeste: o.regions[0],
                     nordeste: o.regions[1],
@@ -631,12 +624,12 @@ sap.ui.define([
             }
 
             try {
-                const sUrl = this._getServiceUrl(`odata/v4/dashboard/statusPerBuyerGroup(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`);
-                const res = await fetch(sUrl);
-                if (!res.ok) throw new Error("Erro ao buscar dados de status por tipo de comprador: " + res.status);
-                const oData = await res.json();
-                console.log("Dados de status por tipo de comprador recebidos:", oData);
-                oDashboardModel.setProperty("/statusPerBuyerGroup/chartData", oData.value || []);
+                const oModel = this.getOwnerComponent().getModel("dashboard");
+                const oBinding = oModel.bindList(`/statusPerBuyerGroup(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`, undefined);
+                const aContexts = await oBinding.requestContexts();
+                const aChartData = aContexts.map(oContext => oContext.getObject());
+                console.log("Dados de status por tipo de comprador recebidos:", aChartData);
+                oDashboardModel.setProperty("/statusPerBuyerGroup/chartData", aChartData);
             } catch (err) {
                 console.error("Erro ao buscar dados de status por tipo de comprador:", err);
             }
