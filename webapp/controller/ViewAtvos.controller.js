@@ -103,7 +103,7 @@ sap.ui.define([
             }
 
             try {
-                const res = await fetch("odata/v4/request/BuyerRequests?$apply=groupby((status))");
+                const res = await fetch(this._getServiceUrl("odata/v4/request/BuyerRequests?$apply=groupby((status))"));
                 if (!res.ok) throw new Error("Erro ao buscar status: " + res.status);
                 const json = await res.json();
                 const aStatuses = (json.value || []).map(o => o.status).filter(Boolean);
@@ -140,7 +140,7 @@ sap.ui.define([
             }
 
             try {
-                const res = await fetch("odata/v4/request/BuyerRequests?$top=10");
+                const res = await fetch(this._getServiceUrl("odata/v4/request/BuyerRequests?$top=10"));
                 if (!res.ok) throw new Error("HTTP " + res.status);
                 const data = await res.json();
                 const iCount = (data.value || []).length;
@@ -221,6 +221,18 @@ sap.ui.define([
             });
         },
 
+        /**
+         * Resolve um caminho relativo (ex: "odata/v4/request/BuyerRequests")
+         * pra URL absoluta baseada em onde o app realmente está montado
+         * (raiz local, sandbox do BAS em /test/, ou subcaminho do HTML5
+         * Application Repository quando deployado) — evita 404 causado por
+         * caminhos com barra inicial (resolvem da raiz do domínio) ou
+         * caminhos relativos simples (resolvem da pasta do documento atual).
+         */
+        _getServiceUrl: function (sPath) {
+            return sap.ui.require.toUrl("finalprojectui5/" + sPath);
+        },
+
         // Formatadores
         formatRequestNumber: function (v) {
             if (v == null) return "";
@@ -281,7 +293,7 @@ sap.ui.define([
 
                 if (sDateFilter) sFilter = sFilter ? `${sFilter} and (${sDateFilter})` : sDateFilter;
 
-                const sCountUrl = "odata/v4/request/BuyerRequests/$count" + (sFilter ? `?$filter=${encodeURIComponent(sFilter)}` : "");
+                const sCountUrl = this._getServiceUrl("odata/v4/request/BuyerRequests/$count") + (sFilter ? `?$filter=${encodeURIComponent(sFilter)}` : "");
                 console.log("Count URL:", sCountUrl);
                 console.log("sFilter (raw):", sFilter);
 
@@ -316,7 +328,7 @@ sap.ui.define([
 
             try {
                 if (oFilterState.numero || oFilterState.material) {
-                    const res = await fetch("odata/v4/request/BuyerRequests?$expand=material,classification,group");
+                    const res = await fetch(this._getServiceUrl("odata/v4/request/BuyerRequests?$expand=material,classification,group"));
                     if (!res.ok) throw new Error("Erro ao buscar BuyerRequests: " + res.status);
                     const json = await res.json();
                     const aAll = json.value || [];
@@ -408,7 +420,7 @@ sap.ui.define([
             if (oListContent) oListContent.setBusy(true);
 
             try {
-                const sUrl = `odata/v4/request/BuyerRequests(${sRequisitionId})?$expand=material,classification,group`;
+                const sUrl = this._getServiceUrl(`odata/v4/request/BuyerRequests(${sRequisitionId})?$expand=material,classification,group`);
                 const res = await fetch(sUrl);
                 if (!res.ok) throw new Error("Erro ao buscar detalhes: " + res.status);
                 const oData = await res.json();
@@ -467,7 +479,7 @@ sap.ui.define([
             }
 
             try {
-                const sUrl = `odata/v4/dashboard/ordersStatus(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`;
+                const sUrl = this._getServiceUrl(`odata/v4/dashboard/ordersStatus(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`);
                 const res = await fetch(sUrl);
                 if (!res.ok) throw new Error("Erro ao buscar dados do dashboard: " + res.status);
                 const oData = await res.json();
@@ -496,7 +508,7 @@ sap.ui.define([
             }
 
             try {
-                const sUrl = `odata/v4/dashboard/kpis(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`;
+                const sUrl = this._getServiceUrl(`odata/v4/dashboard/kpis(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`);
                 const res = await fetch(sUrl);
                 if (!res.ok) throw new Error("Erro ao buscar KPIs do dashboard: " + res.status);
                 const oData = await res.json();
@@ -519,7 +531,7 @@ sap.ui.define([
                 return;
             }
             try {
-                const res = await fetch("odata/v4/request/Materials");
+                const res = await fetch(this._getServiceUrl("odata/v4/request/Materials"));
                 const oData = await res.json();
 
                 const aOptions = (oData.value || []).map(m => ({ key: m.ID, text: m.description }));
@@ -547,7 +559,7 @@ sap.ui.define([
                     return;
                 }
 
-                const sUrl = `odata/v4/dashboard/productCompare(material1='${sMaterial1}',material2='${sMaterial2}',month=${oSelectedMonth.month},year=${oSelectedMonth.year})`;
+                const sUrl = this._getServiceUrl(`odata/v4/dashboard/productCompare(material1='${sMaterial1}',material2='${sMaterial2}',month=${oSelectedMonth.month},year=${oSelectedMonth.year})`);
                 const res = await fetch(sUrl);
                 if (!res.ok) throw new Error("Erro ao buscar dados de comparação de produtos: " + res.status);
                 const oData = await res.json();
@@ -591,7 +603,7 @@ sap.ui.define([
             }
 
             try {
-                const sUrl = `odata/v4/dashboard/totalPerRegion(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`;
+                const sUrl = this._getServiceUrl(`odata/v4/dashboard/totalPerRegion(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`);
                 const res = await fetch(sUrl);
                 if (!res.ok) throw new Error("Erro ao buscar dados de total por região: " + res.status);
                 const oData = await res.json();
@@ -619,7 +631,7 @@ sap.ui.define([
             }
 
             try {
-                const sUrl = `odata/v4/dashboard/statusPerBuyerGroup(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`;
+                const sUrl = this._getServiceUrl(`odata/v4/dashboard/statusPerBuyerGroup(month=${oSelectedMonth.month},year=${oSelectedMonth.year})`);
                 const res = await fetch(sUrl);
                 if (!res.ok) throw new Error("Erro ao buscar dados de status por tipo de comprador: " + res.status);
                 const oData = await res.json();
