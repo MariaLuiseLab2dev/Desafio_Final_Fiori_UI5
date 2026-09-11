@@ -17,10 +17,10 @@ server:
           url: https://ui5.sap.com
         backend:
           - path: /odata/v4/request/
-            url: https://4a7aeb17trial-dev-atvos-saldo-rc-srv.cfapps.us10-003.hana.ondemand.com
+            url: https://64d45dd2trial-dev-atvos-saldo-rc-srv.cfapps.us10-001.hana.ondemand.com
             destination: ATVOS
           - path: /odata/v4/dashboard/
-            url: https://4a7aeb17trial-dev-atvos-saldo-rc-srv.cfapps.us10-003.hana.ondemand.com
+            url: https://64d45dd2trial-dev-atvos-saldo-rc-srv.cfapps.us10-001.hana.ondemand.com
             destination: ATVOS
     - name: fiori-tools-appreload
       afterMiddleware: compression
