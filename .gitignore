@@ -5,7 +5,7 @@ dist/
 Makefile*.mta
 mta_archives
 mta-*
+.claude
 resources
 archive.zip
 .*_mta_build_tmp
-.claude/
