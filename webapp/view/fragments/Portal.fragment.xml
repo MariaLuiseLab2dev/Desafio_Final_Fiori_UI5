@@ -233,13 +233,13 @@
                             />
                             <Text
                                 id="idValueText"
-                                text="{path: 'atvosRc>value', formatter: '.formatCurrency'}"
+                                text="{path: 'atvosRc>value', targetType: 'any', formatter: '.formatCurrency'}"
                             />
 
                             <!-- data -->
                             <Text
                                 id="idCreatedAtText"
-                                text="{path: 'atvosRc>createdAt', formatter: '.formatDate'}"
+                                text="{path: 'atvosRc>createdAt', targetType: 'any', formatter: '.formatDate'}"
                             />
 
                             <!-- status -->
