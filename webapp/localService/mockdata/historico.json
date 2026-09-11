@@ -1,6 +1,6 @@
 [
     { "texto": "Requisição padrão aprovada", "data": "14/02/2025 11:25:38", "status": "done" },
     { "texto": "Cotação / Negociação", "data": "14/02/2025 11:25:38", "status": "done" },
-    { "texto": "Aguardando assinaturas", "data": "", "status": "pending" },
-    { "texto": "Pedido gerado", "data": "14/02/2025 11:25:38", "status": "done" }
+    { "texto": "Aguardando assinaturas", "data": "", "status": "done" },
+    { "texto": "Pedido gerado", "data": "14/02/2025 11:25:38", "status": "pending" }
 ]
