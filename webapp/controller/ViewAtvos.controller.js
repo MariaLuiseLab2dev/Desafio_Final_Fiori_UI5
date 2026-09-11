@@ -319,7 +319,7 @@ sap.ui.define([
 
             try {
                 if (oFilterState.numero || oFilterState.material) {
-                    const oRequestModel = oTable.getModel(this._sOriginalModelName) || this.getOwnerComponent().getModel("atvosRc");
+                    const oRequestModel = this.getOwnerComponent().getModel("atvosRc");
                     const oBinding = oRequestModel.bindList("/BuyerRequests", undefined, undefined, undefined, {
                         $expand: "material,classification,group"
                     });

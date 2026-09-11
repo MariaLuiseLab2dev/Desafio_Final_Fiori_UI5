@@ -89,9 +89,26 @@ sap.ui.define([
     }
 
     /**
-     * Aplica, no lado do cliente, os filtros de número da requisição e de material
-     * sobre um array de BuyerRequests já carregado — usado quando esses dois campos
-     * exigem busca textual que não é resolvida direto via $filter simples do OData.
+     * Converte o valor de createdAt vindo do backend (string ISO, ou objeto
+     * {value: ...} em algumas serializações) para "yyyy-MM-dd" local, pra
+     * comparar com o valor do DatePicker (mesmo formato).
+     */
+    function toDateOnly(vCreatedAt) {
+        const v = (typeof vCreatedAt === "object" && vCreatedAt && vCreatedAt.value) ? vCreatedAt.value : vCreatedAt;
+        const d = (typeof v === "number") ? new Date(v) : new Date(String(v));
+        if (isNaN(d)) return "";
+        const iYear = d.getFullYear();
+        const iMonth = String(d.getMonth() + 1).padStart(2, "0");
+        const iDay = String(d.getDate()).padStart(2, "0");
+        return `${iYear}-${iMonth}-${iDay}`;
+    }
+
+    /**
+     * Aplica, no lado do cliente, TODOS os filtros preenchidos (número, material,
+     * status e data de criação) sobre um array de BuyerRequests já carregado —
+     * usado quando número/material exigem busca textual que não é resolvida
+     * direto via $filter simples do OData, mas ainda precisa combinar com os
+     * outros filtros ativos em vez de ignorá-los.
      */
     function applyClientSideIncludes(aData, oFilterState) {
         let aFiltered = aData;
@@ -109,6 +126,14 @@ sap.ui.define([
                 item.material && item.material.description &&
                 item.material.description.toLowerCase().includes(sMat)
             );
+        }
+
+        if (oFilterState.status) {
+            aFiltered = aFiltered.filter(item => item.status === oFilterState.status);
+        }
+
+        if (oFilterState.dataCriacao) {
+            aFiltered = aFiltered.filter(item => toDateOnly(item.createdAt) === oFilterState.dataCriacao);
         }
 
         return aFiltered;
