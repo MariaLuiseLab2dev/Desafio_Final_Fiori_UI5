@@ -2,6 +2,14 @@
     color: #0a2f5c;
 }
 
+[id$="idBotoesHBox"] {
+    margin-top: 37px !important;
+}
+
+[id$="idDshboardIniciarButton"] {
+    margin-top: 21px !important;
+}
+
 .statusBadge {
     display: inline-block;
     padding: 6px 10px;
