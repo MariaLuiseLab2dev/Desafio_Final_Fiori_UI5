@@ -134,11 +134,11 @@
           "name": "ViewAtvos"
         },
         "TargetDetail": {
-          "id":"detail",
+          "id": "detail",
           "name": "fragments.Details"
         },
         "TargetNotFound": {
-          "id":"notFound",
+          "id": "notFound",
           "name": "NotFound"
         }
       }
@@ -149,5 +149,9 @@
       "id": "App",
       "async": true
     }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "finalprojectui5"
   }
 }
