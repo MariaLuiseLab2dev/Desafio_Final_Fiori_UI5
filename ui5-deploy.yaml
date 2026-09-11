@@ -8,7 +8,8 @@ builder:
   resources:
     excludes:
       - /test/**
-      - /localService/**
+      - /localService/mainService/**
+      - /localService/dashboard/**
   customTasks:
     - name: ui5-task-zipper
       afterTask: generateCachebusterInfo

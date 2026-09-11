@@ -37,4 +37,5 @@ builder:
   resources:
     excludes:
       - /test/**
-      - /localService/**
+      - /localService/mainService/**
+      - /localService/dashboard/**
